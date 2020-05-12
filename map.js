@@ -49,7 +49,17 @@ map.on('load', () => {
   save.onclick = function(e) {
     e.preventDefault()
     var data = draw.getAll();
-    console.log(data)
+    if (data.features.length > 0) {
+      // Stringify the GeoJson
+      var convertedData = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data));
+
+      // Create export
+      document.getElementById('export').setAttribute('href', 'data:' + convertedData);
+      document.getElementById('export').setAttribute('download','data.geojson');
+      document.getElementById('export').click();
+    } else {
+        alert("Wouldn't you like to draw some data?");
+    }
   }
 })
 
