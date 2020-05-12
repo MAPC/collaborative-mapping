@@ -17,17 +17,44 @@ const draw = new MapboxDraw({
   userProperties: true
 });
 
-map.addControl(draw);
+map.addControl(draw, 'top-left');
 map.on('load', () => {
   map.on('draw.create', function (e) {
-    draw.setFeatureProperty(e.features[0].id, 'user_text', 'test')
+    let coordinates;
+    switch(draw.getMode()) {
+      case 'draw_point':
+        coordinates = e.features[0].geometry.coordinates;
+        break;
+      case 'draw_line_string':
+        coordinates = e.features[0].geometry.coordinates[e.features[0].geometry.coordinates.length - 1];
+        break;
+      case 'draw_polygon':
+        coordinates = e.features[0].geometry.coordinates[0][e.features[0].geometry.coordinates.length - 1];
+        break;
+    }
+    
+    const popup = new mapboxgl.Popup({ closeOnClick: false })
+      .setLngLat(coordinates)
+      .setHTML(`
+        <input type="text" id="myText" placeholder="Title here">
+        <button id="submit">Set</button>`
+      )
+      .addTo(map);
+    popup.getElement().querySelector('#submit').addEventListener('click', () => {
+      setTitle(e.features[0].id, popup);
+    })
   });
-  console.log(map.getStyle())
+
   const save = document.querySelector('#save')
-  console.log(save)
   save.onclick = function(e) {
     e.preventDefault()
     var data = draw.getAll();
     console.log(data)
   }
 })
+
+
+function setTitle(featureId, popupObj) {
+  draw.setFeatureProperty(featureId,'user__title',document.querySelector('#myText').value);
+  popupObj.remove();
+}
