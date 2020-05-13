@@ -151,7 +151,7 @@ const draw = new MapboxDraw({
 
 map.addControl(draw, 'top-left');
 map.on('load', () => {
-  map.on('click', function(e) {
+  map.on('click', function() {
     const selectedFeature = draw.getSelected();
     if (selectedFeature.features.length > 0) {
       let coordinates;
@@ -169,14 +169,21 @@ map.on('load', () => {
       const popup = new mapboxgl.Popup()
         .setLngLat(coordinates)
         .setHTML(`
-          <input type="text" id="myText" placeholder="Title here">
+          <input type="text" id="title" placeholder="Title" class="popup__title">
+          <textarea id="notes" rows="5" placeholder="Notes" class="popup__notes"></textarea>
           <button id="submit">Set</button>`
         )
+        .setMaxWidth('300px')
         .addTo(map);
       
       const currentTitle = selectedFeature.features[0].properties.user__title;
+      const currentNotes = selectedFeature.features[0].properties.user__notes;
       if (currentTitle) {
-        document.getElementById("myText").defaultValue = currentTitle
+        document.getElementById("title").defaultValue = currentTitle
+      }
+
+      if (currentNotes) {
+        document.getElementById("notes").defaultValue = currentNotes
       }
 
       popup.getElement().querySelector('#submit').addEventListener('click', () => {
@@ -187,12 +194,8 @@ map.on('load', () => {
 })
 
 document.querySelector('#mbta').addEventListener('click', () => {
-  toggleLayer('mbta');
+  toggleLayer('mbta-routes');
   toggleLayer('mbta-stops');
-  toggleLayer('bus');
-  toggleLayer('bus-stops');
-  toggleLayer('commuter-rail');
-  toggleLayer('commuter-rail-stops');
 })
 saveGeojson();
 
@@ -223,6 +226,8 @@ function saveGeojson() {
 }
 
 function setTitle(featureId, popupObj) {
-  draw.setFeatureProperty(featureId,'user__title',document.querySelector('#myText').value);
+  console.log(document.querySelector('#notes').value)
+  draw.setFeatureProperty(featureId, 'user__title', document.querySelector('#title').value);
+  draw.setFeatureProperty(featureId, 'user__notes', document.querySelector('#notes').value);
   popupObj.remove();
 }
