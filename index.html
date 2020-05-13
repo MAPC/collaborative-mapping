@@ -4,7 +4,6 @@
     <meta charset="utf-8" />
     <title>Allston West Station</title>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
-    <script src="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.js"></script>
     <link href="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.css" rel="stylesheet" />
     <link
       rel="stylesheet"
@@ -14,14 +13,18 @@
     <link href="style.css" rel="stylesheet" />
   </head>
   <body>
-    <div id="map" />
-    <form class="layers">
-      <input type="checkbox" id="mbta" name="selected-layer" value="mbta" selected checked>
-      <label for="mbta">MBTA</label><br>
-      <button id="save">Save</button>
-    </form>
-    <a id="export"></a>
-    <script src="https://api.tiles.mapbox.com/mapbox.js/plugins/turf/v3.0.11/turf.min.js"></script>
+    <main id="map"></main>
+    <aside class="sidebar">
+      <form class="layers">
+        <p>Layers</p>
+        <input type="checkbox" id="mbta" name="selected-layer" value="mbta" selected checked>
+        <label for="mbta">MBTA</label><br>
+        <button id="save">Save</button>
+      </form>
+      <hr />
+      <a id="export"></a>
+    </aside>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.js"></script>
     <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.js"></script>
     <script src="map.js"></script>
   </body>
