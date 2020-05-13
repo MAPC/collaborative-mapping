@@ -19,6 +19,14 @@ const draw = new MapboxDraw({
 
 map.addControl(draw, 'top-left');
 map.on('load', () => {
+  document.querySelector('#mbta').addEventListener('click', () => {
+    toggleLayer('mbta');
+    toggleLayer('mbta-stops');
+    toggleLayer('bus');
+    toggleLayer('bus-stops');
+    toggleLayer('commuter-rail');
+    toggleLayer('commuter-rail-stops');
+  })
   map.on('draw.create', function (e) {
     let coordinates;
     switch(draw.getMode()) {
@@ -50,10 +58,7 @@ map.on('load', () => {
     e.preventDefault()
     var data = draw.getAll();
     if (data.features.length > 0) {
-      // Stringify the GeoJson
-      var convertedData = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data));
-
-      // Create export
+      const convertedData = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data));
       document.getElementById('export').setAttribute('href', 'data:' + convertedData);
       document.getElementById('export').setAttribute('download','data.geojson');
       document.getElementById('export').click();
@@ -63,8 +68,16 @@ map.on('load', () => {
   }
 })
 
-
 function setTitle(featureId, popupObj) {
   draw.setFeatureProperty(featureId,'user__title',document.querySelector('#myText').value);
   popupObj.remove();
+}
+
+function toggleLayer(layerId) {
+  const visibility = map.getLayoutProperty(layerId, 'visibility');
+  if (visibility === 'visible' || visibility === undefined) {
+    map.setLayoutProperty(layerId, 'visibility', 'none');
+  } else {
+    map.setLayoutProperty(layerId, 'visibility', 'visible');
+  }
 }
