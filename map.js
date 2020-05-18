@@ -208,132 +208,112 @@ document.querySelector('.layers').addEventListener('click', (e) => {
 
     case 'population':
       map.setPaintProperty('taz', 'fill-opacity', 1);
-      map.setPaintProperty('taz', 'fill-color', {
-        property: 'tabular_Total Population',
-        stops: [
-          [0, '#f1f075'],
-          [1000, '#e55e5e'],
-          [2000, 'green'],
-          [3000, 'blue']
-          ]
-        }
+      map.setPaintProperty('taz', 'fill-color', ["step",
+        ['get', 'tabular_Total Population'],
+        '#238B45', 0,
+        '#F7FCFD', 1000,
+        '#CCECE6', 2000,
+        '#66C2A4', 3000,
+        '#238B45', 4000,
+        '#00441B', 5000,
+        '#00441B'
+      ]
       );
       break;
 
     case 'households':
       map.setPaintProperty('taz', 'fill-opacity', 1);
-      map.setPaintProperty('taz', 'fill-color', {
-        property: 'tabular_Total Households',
-        stops: [
-          [0, 'yellow'],
-          [1000, 'red'],
-          [2000, 'green'],
-          [3000, 'blue'],
-          [4000, 'gold'],
-          [5000, 'pink'],
-          [6000, 'purple'],
-          [7000, 'aqua'],
-          ]
-        }
+      map.setPaintProperty('taz', 'fill-color', ["step",
+        ['get', 'tabular_Total Households'],
+        '#F7FCFD', 500,
+        '#CCECE6', 1000,
+        '#66C2A4', 1500,
+        '#238B45', 2000,
+        '#00441B', 2500,
+        '#00441B'
+      ]
       );
       break;
 
     case 'employment':
       map.setPaintProperty('taz', 'fill-opacity', 1);
-      map.setPaintProperty('taz', 'fill-color', {
-        property: 'tabular_Total Employment',
-        stops: [
-          [0, 'yellow'],
-          [1000, 'red'],
-          [2000, 'green'],
-          [3000, 'blue'],
-          [4000, 'gold'],
-          [5000, 'pink'],
-          [6000, 'purple'],
-          [7000, 'aqua'],
-          ]
-        }
+      map.setPaintProperty('taz', 'fill-color', ["step",
+        ['get', 'tabular_Total Employment'],
+        '#238B45', 0,
+        '#F7FCFD', 160,
+        '#CCECE6', 320,
+        '#66C2A4', 550,
+        '#238B45', 1000,
+        '#00441B'
+      ]
       );
       break;
     
     case 'autos':
       map.setPaintProperty('taz', 'fill-opacity', 1);
-      map.setPaintProperty('taz', 'fill-color', {
-        property: 'tabular_% of Households with 1+ autos',
-        stops: [
-          [0, 'yellow'],
-          [20, 'red'],
-          [40, 'green'],
-          [60, 'blue'],
-          [80, 'gold'],
-          [1000, 'pink'],
-          ]
-        }
+      map.setPaintProperty('taz', 'fill-color', ["step",
+        ['get', 'tabular_% of Households with 1+ autos'],
+        '#238B45', 0,
+        '#F7FCFD', 60,
+        '#CCECE6', 70,
+        '#66C2A4', 80,
+        '#238B45', 90,
+        '#00441B'
+      ]
       );
       break;
 
     case 'workers':
       map.setPaintProperty('taz', 'fill-opacity', 1);
-      map.setPaintProperty('taz', 'fill-color', {
-        property: 'tabular_% of Households with 1+ workers',
-        stops: [
-          [0, 'yellow'],
-          [20, 'red'],
-          [40, 'green'],
-          [60, 'blue'],
-          [80, 'gold'],
-          [1000, 'pink'],
-          ]
-        }
+      map.setPaintProperty('taz', 'fill-color', ["step",
+        ['get', 'tabular_% of Households with 1+ workers'],
+        '#238B45', 0,
+        '#F7FCFD', 40,
+        '#CCECE6', 55,
+        '#66C2A4', 70,
+        '#238B45', 85,
+        '#00441B'
+      ]
       );
       break;
 
     case 'retail':
       map.setPaintProperty('taz', 'fill-opacity', 1);
-      map.setPaintProperty('taz', 'fill-color', {
-        property: 'tabular_% Retail employment',
-        stops: [
-          [0, 'yellow'],
-          [20, 'red'],
-          [40, 'green'],
-          [60, 'blue'],
-          [80, 'gold'],
-          [1000, 'pink'],
-          ]
-        }
-      );
+      map.setPaintProperty('taz', 'fill-color', ["step",
+        ['get', 'tabular_% Retail employment'],
+        '#238B45', 0,
+        '#F7FCFD', 5,
+        '#CCECE6', 9,
+        '#66C2A4', 14,
+        '#238B45', 24,
+        '#00441B'
+      ]);
       break;
 
     case 'service':
       map.setPaintProperty('taz', 'fill-opacity', 1);
-      map.setPaintProperty('taz', 'fill-color', {
-        property: 'tabular_% Service employment',
-        stops: [
-          [0, 'yellow'],
-          [20, 'red'],
-          [40, 'green'],
-          [60, 'blue'],
-          [80, 'gold'],
-          [1000, 'pink'],
-          ]
-        }
-      );
+      map.setPaintProperty('taz', 'fill-color', ["step",
+        ['get', 'tabular_% Service employment'],
+        '#238B45', 0,
+        '#F7FCFD', 45,
+        '#CCECE6', 58,
+        '#66C2A4', 68,
+        '#238B45', 78,
+        '#00441B'
+      ]);
       break;
 
     case 'basic':
       map.setPaintProperty('taz', 'fill-opacity', 1);
-      map.setPaintProperty('taz', 'fill-color', {
-        property: 'tabular_% Basic employment',
-        stops: [
-          [0, 'yellow'],
-          [20, 'red'],
-          [40, 'green'],
-          [60, 'blue'],
-          [80, 'gold'],
-          [1000, 'pink'],
-          ]
-        }
-      );
+      map.setPaintProperty('taz', 'fill-color', ["step",
+        ['get', 'tabular_% Basic employment'],
+        '#238B45', 0,
+        '#F7FCFD', 9,
+        '#CCECE6', 17,
+        '#66C2A4', 29,
+        '#238B45', 35,
+        '#00441B'
+      ]);
       break;
   }
 });
