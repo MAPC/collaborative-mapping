@@ -149,6 +149,9 @@ const draw = new MapboxDraw({
   ]
 });
 
+const colors = ['#F15B52', '#F37871', '#F8B4B0', '#FBD2CF', '#F0EFE7'];
+const choropleth = ['match', ['get', 'ID']];
+
 map.addControl(draw, 'top-left');
 map.on('load', () => {
   map.on('click', function() {
@@ -193,10 +196,148 @@ map.on('load', () => {
   });
 })
 
-document.querySelector('#mbta').addEventListener('click', () => {
-  toggleLayer('mbta-routes');
-  toggleLayer('mbta-stops');
-})
+document.querySelector('.layers').addEventListener('click', (e) => {
+  switch(e.target.id) {
+    case 'mbta':
+      toggleLayer('mbta-routes');
+      toggleLayer('mbta-stops');
+      break;
+    
+    case 'massbuilds':
+      break;
+
+    case 'population':
+      map.setPaintProperty('taz', 'fill-opacity', 1);
+      map.setPaintProperty('taz', 'fill-color', {
+        property: 'tabular_Total Population',
+        stops: [
+          [0, '#f1f075'],
+          [1000, '#e55e5e'],
+          [2000, 'green'],
+          [3000, 'blue']
+          ]
+        }
+      );
+      break;
+
+    case 'households':
+      map.setPaintProperty('taz', 'fill-opacity', 1);
+      map.setPaintProperty('taz', 'fill-color', {
+        property: 'tabular_Total Households',
+        stops: [
+          [0, 'yellow'],
+          [1000, 'red'],
+          [2000, 'green'],
+          [3000, 'blue'],
+          [4000, 'gold'],
+          [5000, 'pink'],
+          [6000, 'purple'],
+          [7000, 'aqua'],
+          ]
+        }
+      );
+      break;
+
+    case 'employment':
+      map.setPaintProperty('taz', 'fill-opacity', 1);
+      map.setPaintProperty('taz', 'fill-color', {
+        property: 'tabular_Total Employment',
+        stops: [
+          [0, 'yellow'],
+          [1000, 'red'],
+          [2000, 'green'],
+          [3000, 'blue'],
+          [4000, 'gold'],
+          [5000, 'pink'],
+          [6000, 'purple'],
+          [7000, 'aqua'],
+          ]
+        }
+      );
+      break;
+    
+    case 'autos':
+      map.setPaintProperty('taz', 'fill-opacity', 1);
+      map.setPaintProperty('taz', 'fill-color', {
+        property: 'tabular_% of Households with 1+ autos',
+        stops: [
+          [0, 'yellow'],
+          [20, 'red'],
+          [40, 'green'],
+          [60, 'blue'],
+          [80, 'gold'],
+          [1000, 'pink'],
+          ]
+        }
+      );
+      break;
+
+    case 'workers':
+      map.setPaintProperty('taz', 'fill-opacity', 1);
+      map.setPaintProperty('taz', 'fill-color', {
+        property: 'tabular_% of Households with 1+ workers',
+        stops: [
+          [0, 'yellow'],
+          [20, 'red'],
+          [40, 'green'],
+          [60, 'blue'],
+          [80, 'gold'],
+          [1000, 'pink'],
+          ]
+        }
+      );
+      break;
+
+    case 'retail':
+      map.setPaintProperty('taz', 'fill-opacity', 1);
+      map.setPaintProperty('taz', 'fill-color', {
+        property: 'tabular_% Retail employment',
+        stops: [
+          [0, 'yellow'],
+          [20, 'red'],
+          [40, 'green'],
+          [60, 'blue'],
+          [80, 'gold'],
+          [1000, 'pink'],
+          ]
+        }
+      );
+      break;
+
+    case 'service':
+      map.setPaintProperty('taz', 'fill-opacity', 1);
+      map.setPaintProperty('taz', 'fill-color', {
+        property: 'tabular_% Service employment',
+        stops: [
+          [0, 'yellow'],
+          [20, 'red'],
+          [40, 'green'],
+          [60, 'blue'],
+          [80, 'gold'],
+          [1000, 'pink'],
+          ]
+        }
+      );
+      break;
+
+    case 'basic':
+      map.setPaintProperty('taz', 'fill-opacity', 1);
+      map.setPaintProperty('taz', 'fill-color', {
+        property: 'tabular_% Basic employment',
+        stops: [
+          [0, 'yellow'],
+          [20, 'red'],
+          [40, 'green'],
+          [60, 'blue'],
+          [80, 'gold'],
+          [1000, 'pink'],
+          ]
+        }
+      );
+      break;
+  }
+});
+
 saveGeojson();
 
 function toggleLayer(layerId) {

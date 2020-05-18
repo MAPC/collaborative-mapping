@@ -16,9 +16,35 @@
     <main id="map" class="map"></main>
     <aside class="sidebar">
       <form class="layers">
-        <p>Layers</p>
-        <input type="checkbox" id="mbta" name="selected-layer" value="mbta" selected checked>
-        <label for="mbta">MBTA</label><br>
+        <input type="checkbox" id="mbta" checked>
+        <label for="mbta">MBTA + ferry lines</label><br>
+
+        <input type="checkbox" id="massbuilds">
+        <label for="massbuilds">MassBuilds developments</label><br>
+        
+        <input type="radio" id="population" name="layer__radio-options">
+        <label for="population">Total population</label><br>
+        
+        <input type="radio" id="households" name="layer__radio-options">
+        <label for="households">Total households</label><br>
+
+        <input type="radio" id="employment" name="layer__radio-options">
+        <label for="employment">Total employment</label><br>
+        
+        <input type="radio" id="autos" name="layer__radio-options">
+        <label for="autos">Households with 1+ cars (%)</label><br>
+
+        <input type="radio" id="workers" name="layer__radio-options">
+        <label for="workers">Households with 1+ workers (%)</label><br>
+
+        <input type="radio" id="retail" name="layer__radio-options">
+        <label for="retail">Retail employment (%)</label><br>
+
+        <input type="radio" id="service" name="layer__radio-options">
+        <label for="service">Service employment (%)</label><br>
+
+        <input type="radio" id="basic" name="layer__radio-options">
+        <label for="basic">Basic employment (%)</label><br>
         <button id="save">Save</button>
       </form>
       <a id="export"></a>
