@@ -197,7 +197,18 @@ map.on('load', () => {
 })
 
 document.querySelector('.layers').addEventListener('click', (e) => {
+  const legend = document.querySelector(".legend");
+  const entry1 = legend.querySelector("#legend-1");
+  const entry2 = legend.querySelector("#legend-2");
+  const entry3 = legend.querySelector("#legend-3");
+  const entry4 = legend.querySelector("#legend-4");
+  const entry5 = legend.querySelector("#legend-5");
   switch(e.target.id) {
+    case 'reset':
+      legend.style.display = "none";
+      map.setPaintProperty('taz', 'fill-opacity', 0);
+      break;
+    
     case 'mbta':
       toggleLayer('mbta-routes');
       toggleLayer('mbta-stops');
@@ -207,24 +218,36 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       break;
 
     case 'population':
+      legend.style.display = "inline";
+      entry1.textContent = "1 - 999";
+      entry2.textContent = "1000 - 1999";
+      entry3.textContent = "2000 - 2999";
+      entry4.textContent = "3000 - 3999";
+      entry5.textContent = "4000+";
       map.setPaintProperty('taz', 'fill-opacity', 1);
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_Total Population'],
-        '#238B45', 0,
-        '#F7FCFD', 1000,
-        '#CCECE6', 2000,
-        '#66C2A4', 3000,
-        '#238B45', 4000,
-        '#00441B', 5000,
-        '#00441B'
-      ]
-      );
+        '#E8BCD9', 1, // less than 1
+        '#F7FCFD', 1000, // between 1 and 1000
+        '#CCECE6', 2000, // between 1000 and 2000
+        '#66C2A4', 3000, // between 2000 and 3000
+        '#238B45', 4000,// between 3000 and 4000
+        // '#00441B', 5000, // between 4000 and 5000
+        '#00441B' // over 5000
+      ]);
       break;
 
     case 'households':
+      legend.style.display = "inline";
+      entry1.textContent = "1 - 500";
+      entry2.textContent = "501 - 1000";
+      entry3.textContent = "1001 - 1500";
+      entry4.textContent = "1501 - 2000";
+      entry5.textContent = "2500+";
       map.setPaintProperty('taz', 'fill-opacity', 1);
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_Total Households'],
+        '#E8BCD9', 1,
         '#F7FCFD', 500,
         '#CCECE6', 1000,
         '#66C2A4', 1500,
@@ -236,10 +259,16 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       break;
 
     case 'employment':
+      legend.style.display = "inline";
+      entry1.textContent = "1 - 160";
+      entry2.textContent = "161 - 320";
+      entry3.textContent = "321 - 550";
+      entry4.textContent = "551 - 1000";
+      entry5.textContent = "1001+";
       map.setPaintProperty('taz', 'fill-opacity', 1);
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_Total Employment'],
-        '#238B45', 0,
+        '#E8BCD9', 1,
         '#F7FCFD', 160,
         '#CCECE6', 320,
         '#66C2A4', 550,
@@ -250,10 +279,11 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       break;
     
     case 'autos':
+      legend.style.display = "inline";
       map.setPaintProperty('taz', 'fill-opacity', 1);
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% of Households with 1+ autos'],
-        '#238B45', 0,
+        '#E8BCD9', 1,
         '#F7FCFD', 60,
         '#CCECE6', 70,
         '#66C2A4', 80,
@@ -264,10 +294,11 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       break;
 
     case 'workers':
+      legend.style.display = "inline";
       map.setPaintProperty('taz', 'fill-opacity', 1);
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% of Households with 1+ workers'],
-        '#238B45', 0,
+        '#E8BCD9', 1,
         '#F7FCFD', 40,
         '#CCECE6', 55,
         '#66C2A4', 70,
@@ -278,10 +309,11 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       break;
 
     case 'retail':
+      legend.style.display = "inline";
       map.setPaintProperty('taz', 'fill-opacity', 1);
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% Retail employment'],
-        '#238B45', 0,
+        '#E8BCD9', 1,
         '#F7FCFD', 5,
         '#CCECE6', 9,
         '#66C2A4', 14,
@@ -291,10 +323,11 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       break;
 
     case 'service':
+      legend.style.display = "inline";
       map.setPaintProperty('taz', 'fill-opacity', 1);
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% Service employment'],
-        '#238B45', 0,
+        '#E8BCD9', 1,
         '#F7FCFD', 45,
         '#CCECE6', 58,
         '#66C2A4', 68,
@@ -304,10 +337,11 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       break;
 
     case 'basic':
+      legend.style.display = "inline";
       map.setPaintProperty('taz', 'fill-opacity', 1);
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% Basic employment'],
-        '#238B45', 0,
+        '#E8BCD9', 1,
         '#F7FCFD', 9,
         '#CCECE6', 17,
         '#66C2A4', 29,
