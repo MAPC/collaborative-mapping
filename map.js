@@ -154,7 +154,7 @@ const choropleth = ['match', ['get', 'ID']];
 
 map.addControl(draw, 'top-left');
 map.on('load', () => {
-  map.on('click', function() {
+  map.on('click', function(e) {
     const selectedFeature = draw.getSelected();
     if (selectedFeature.features.length > 0) {
       let coordinates;
@@ -178,6 +178,7 @@ map.on('load', () => {
         )
         .setMaxWidth('300px')
         .addTo(map);
+
       
       const currentTitle = selectedFeature.features[0].properties.user__title;
       const currentNotes = selectedFeature.features[0].properties.user__notes;
@@ -192,6 +193,66 @@ map.on('load', () => {
       popup.getElement().querySelector('#submit').addEventListener('click', () => {
         setTitle(selectedFeature.features[0].id, popup);
       })
+    } else {
+      const clickedData = map.queryRenderedFeatures(
+        [e.point.x, e.point.y],
+        { layers: ['taz', 'mbta-stops', 'mbta-routes'] },
+      );
+      if (clickedData.some(item => item.properties.layer != null)) {
+        const mbtaData = clickedData.find(item => item.properties.layer != undefined).properties;
+          if (mbtaData.layer === 'Commuter-rail_stops') {
+            new mapboxgl.Popup()
+              .setLngLat(e.lngLat)
+              .setHTML(`
+                <p>${mbtaData.LINE_BRNCH}</p>
+                <p>${mbtaData.STATION}</p>
+              `)
+              .setMaxWidth('300px')
+              .addTo(map);
+
+          } else if (mbtaData.layer === 'MBTA_nodes') {
+            new mapboxgl.Popup()
+              .setLngLat(e.lngLat)
+              .setHTML(`
+                <p>${mbtaData.LINE} ${mbtaData.ROUTE}</p>
+                <p>${mbtaData.STATION}}</p>
+              `)
+              .setMaxWidth('300px')
+              .addTo(map);
+          } else if (mbtaData.layer === 'Bus_stops') {
+            new mapboxgl.Popup()
+              .setLngLat(e.lngLat)
+              .setHTML(`
+                <p>${mbtaData.STOP_NAME}</p>
+              `)
+              .setMaxWidth('300px')
+              .addTo(map);
+          } else {
+            new mapboxgl.Popup()
+              .setLngLat(e.lngLat)
+              .setHTML(`
+                <p>${mbtaData.term_name}</p>
+              `)
+              .setMaxWidth('300px')
+              .addTo(map);
+          }
+      } else {
+        const tazData = clickedData.find(item => item.properties['tabular_Total Population'] != null).properties;
+        new mapboxgl.Popup()
+        .setLngLat(e.lngLat)
+        .setHTML(`
+          <p>Total population: ${tazData['tabular_Total Population']}</p>
+          <p>Total households: ${tazData['tabular_Total Households']}</p>
+          <p>Total employment: ${tazData['tabular_Total Employment']}</p>
+          <p>Households with 1+ cars (%): ${tazData['tabular_% of Households with 1+ autos']}</p>
+          <p>Households with 1+ workers (%): ${tazData['tabular_% of Households with 1+ workers']}</p>
+          <p>Retail employment (%): ${tazData['tabular_% Retail employment']}</p>
+          <p>Service employment (%): ${tazData['tabular_% Service employment']}</p>
+          <p>Basic employment (%): ${tazData['tabular_% Basic employment']}</p>
+        `)
+        .setMaxWidth('300px')
+        .addTo(map);
+      }
     }
   });
 })
@@ -367,7 +428,6 @@ function saveGeojson() {
   const save = document.querySelector('#save')
   save.onclick = function(e) {
     e.preventDefault()
-    console.log(map.getStyle().layers)
     var data = draw.getAll();
     if (data.features.length > 0) {
       const convertedData = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data));
@@ -381,7 +441,6 @@ function saveGeojson() {
 }
 
 function setTitle(featureId, popupObj) {
-  console.log(document.querySelector('#notes').value)
   draw.setFeatureProperty(featureId, 'user__title', document.querySelector('#title').value);
   draw.setFeatureProperty(featureId, 'user__notes', document.querySelector('#notes').value);
   popupObj.remove();
