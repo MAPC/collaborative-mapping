@@ -155,6 +155,7 @@ const choropleth = ['match', ['get', 'ID']];
 map.addControl(draw, 'top-left');
 map.on('load', () => {
   map.setLayoutProperty('taz', 'visibility', 'none');
+  map.setLayoutProperty('massbuilds', 'visibility', 'none');
   map.on('click', function(e) {
     const selectedFeature = draw.getSelected();
     if (selectedFeature.features.length > 0) {
@@ -197,8 +198,9 @@ map.on('load', () => {
     } else {
       const clickedData = map.queryRenderedFeatures(
         [e.point.x, e.point.y],
-        { layers: ['taz', 'mbta-stops', 'mbta-routes'] },
+        { layers: ['taz', 'mbta-stops', 'mbta-routes', 'massbuilds'] },
       );
+      console.log(clickedData)
       if (clickedData.some(item => item.properties.layer != null)) {
         const mbtaData = clickedData.find(item => item.properties.layer != undefined).properties;
           if (mbtaData.layer === 'Commuter-rail_stops') {
@@ -237,6 +239,17 @@ map.on('load', () => {
               .setMaxWidth('300px')
               .addTo(map);
           }
+      } else if (clickedData.some(item => item.properties.STATUS != null)) {
+        const massbuildsData = clickedData.find(item => item.properties.STATUS != null).properties;
+        new mapboxgl.Popup()
+          .setLngLat(e.lngLat)
+          .setHTML(`
+            <p>${massbuildsData.NAME}</p>
+            <p>Status: ${massbuildsData.STATUS}</p>
+            <p>Est. completion year: ${massbuildsData.YEAR_COMPL}</p>
+          `)
+          .setMaxWidth('300px')
+          .addTo(map);
       } else {
         const tazData = clickedData.find(item => item.properties['tabular_Total Population'] != null).properties;
         new mapboxgl.Popup()
@@ -259,16 +272,20 @@ map.on('load', () => {
 })
 
 document.querySelector('.layers').addEventListener('click', (e) => {
-  const legend = document.querySelector(".legend");
-  const entry1 = legend.querySelector("#legend-1");
-  const entry2 = legend.querySelector("#legend-2");
-  const entry3 = legend.querySelector("#legend-3");
-  const entry4 = legend.querySelector("#legend-4");
-  const entry5 = legend.querySelector("#legend-5");
+  const choroplethLegend = document.querySelector(".legend__choropleth");
+  const massbuildsLegend = document.querySelector(".legend__massbuilds");
+  const entry1 = choroplethLegend.querySelector("#legend-1");
+  const entry2 = choroplethLegend.querySelector("#legend-2");
+  const entry3 = choroplethLegend.querySelector("#legend-3");
+  const entry4 = choroplethLegend.querySelector("#legend-4");
+  const entry5 = choroplethLegend.querySelector("#legend-5");
   switch(e.target.id) {
     case 'reset':
-      legend.style.display = "none";
-      // map.setPaintProperty('taz', 'fill-opacity', 0);
+      choroplethLegend.style.display = "none";
+      massbuildsLegend.style.display = "none";
+      map.setLayoutProperty('mbta-stops', 'visibility', 'visible');
+      map.setLayoutProperty('mbta-routes', 'visibility', 'visible');
+      map.setLayoutProperty('massbuilds', 'visibility', 'none');
       map.setLayoutProperty('taz', 'visibility', 'none');
       break;
     
@@ -278,10 +295,12 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       break;
     
     case 'massbuilds':
+      massbuildsLegend.style.display = "inline";
+      toggleLayer('massbuilds');
       break;
 
     case 'population':
-      legend.style.display = "inline";
+      choroplethLegend.style.display = "inline";
       entry1.textContent = "1 - 999";
       entry2.textContent = "1000 - 1999";
       entry3.textContent = "2000 - 2999";
@@ -300,7 +319,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       break;
 
     case 'households':
-      legend.style.display = "inline";
+      choroplethLegend.style.display = "inline";
       entry1.textContent = "1 - 500";
       entry2.textContent = "501 - 1000";
       entry3.textContent = "1001 - 1500";
@@ -321,7 +340,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       break;
 
     case 'employment':
-      legend.style.display = "inline";
+      choroplethLegend.style.display = "inline";
       entry1.textContent = "1 - 160";
       entry2.textContent = "161 - 320";
       entry3.textContent = "321 - 550";
@@ -341,7 +360,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       break;
     
     case 'autos':
-      legend.style.display = "inline";
+      choroplethLegend.style.display = "inline";
       map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% of Households with 1+ autos'],
@@ -356,7 +375,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       break;
 
     case 'workers':
-      legend.style.display = "inline";
+      choroplethLegend.style.display = "inline";
       map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% of Households with 1+ workers'],
@@ -371,7 +390,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       break;
 
     case 'retail':
-      legend.style.display = "inline";
+      choroplethLegend.style.display = "inline";
       map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% Retail employment'],
@@ -385,7 +404,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       break;
 
     case 'service':
-      legend.style.display = "inline";
+      choroplethLegend.style.display = "inline";
       map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% Service employment'],
@@ -399,7 +418,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       break;
 
     case 'basic':
-      legend.style.display = "inline";
+      choroplethLegend.style.display = "inline";
       map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% Basic employment'],
