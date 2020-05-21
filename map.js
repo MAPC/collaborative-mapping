@@ -154,6 +154,7 @@ const choropleth = ['match', ['get', 'ID']];
 
 map.addControl(draw, 'top-left');
 map.on('load', () => {
+  map.setLayoutProperty('taz', 'visibility', 'none');
   map.on('click', function(e) {
     const selectedFeature = draw.getSelected();
     if (selectedFeature.features.length > 0) {
@@ -267,7 +268,8 @@ document.querySelector('.layers').addEventListener('click', (e) => {
   switch(e.target.id) {
     case 'reset':
       legend.style.display = "none";
-      map.setPaintProperty('taz', 'fill-opacity', 0);
+      // map.setPaintProperty('taz', 'fill-opacity', 0);
+      map.setLayoutProperty('taz', 'visibility', 'none');
       break;
     
     case 'mbta':
@@ -285,7 +287,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "2000 - 2999";
       entry4.textContent = "3000 - 3999";
       entry5.textContent = "4000+";
-      map.setPaintProperty('taz', 'fill-opacity', 1);
+      map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_Total Population'],
         '#E8BCD9', 1, // less than 1
@@ -293,8 +295,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
         '#CCECE6', 2000, // between 1000 and 2000
         '#66C2A4', 3000, // between 2000 and 3000
         '#238B45', 4000,// between 3000 and 4000
-        // '#00441B', 5000, // between 4000 and 5000
-        '#00441B' // over 5000
+        '#00441B' // over 4000
       ]);
       break;
 
@@ -305,7 +306,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "1001 - 1500";
       entry4.textContent = "1501 - 2000";
       entry5.textContent = "2500+";
-      map.setPaintProperty('taz', 'fill-opacity', 1);
+      map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_Total Households'],
         '#E8BCD9', 1,
@@ -326,7 +327,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "321 - 550";
       entry4.textContent = "551 - 1000";
       entry5.textContent = "1001+";
-      map.setPaintProperty('taz', 'fill-opacity', 1);
+      map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_Total Employment'],
         '#E8BCD9', 1,
@@ -341,7 +342,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
     
     case 'autos':
       legend.style.display = "inline";
-      map.setPaintProperty('taz', 'fill-opacity', 1);
+      map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% of Households with 1+ autos'],
         '#E8BCD9', 1,
@@ -356,7 +357,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
 
     case 'workers':
       legend.style.display = "inline";
-      map.setPaintProperty('taz', 'fill-opacity', 1);
+      map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% of Households with 1+ workers'],
         '#E8BCD9', 1,
@@ -371,7 +372,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
 
     case 'retail':
       legend.style.display = "inline";
-      map.setPaintProperty('taz', 'fill-opacity', 1);
+      map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% Retail employment'],
         '#E8BCD9', 1,
@@ -385,7 +386,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
 
     case 'service':
       legend.style.display = "inline";
-      map.setPaintProperty('taz', 'fill-opacity', 1);
+      map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% Service employment'],
         '#E8BCD9', 1,
@@ -399,7 +400,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
 
     case 'basic':
       legend.style.display = "inline";
-      map.setPaintProperty('taz', 'fill-opacity', 1);
+      map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% Basic employment'],
         '#E8BCD9', 1,
@@ -445,3 +446,10 @@ function setTitle(featureId, popupObj) {
   draw.setFeatureProperty(featureId, 'user__notes', document.querySelector('#notes').value);
   popupObj.remove();
 }
+
+// window.addEventListener('beforeunload', function (e) {
+//   var confirmationMessage = "\o/";
+
+//   (e || window.event).returnValue = confirmationMessage; //Gecko + IE
+//   return confirmationMessage;  
+// });
