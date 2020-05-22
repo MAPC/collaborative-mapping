@@ -54,3 +54,19 @@ p {
   font-size: 16px;
   font-weight: bolder;
 }
+
+.control__download {
+  background: #FFF;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  cursor: pointer;
+  position: absolute;
+  left: 8px;
+  top: 130px;
+  width: 29px;
+  z-index: 20;
+}
+
+.control__download:hover {
+  background:#F2F2F2;
+}

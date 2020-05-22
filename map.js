@@ -445,7 +445,7 @@ function toggleLayer(layerId) {
 }
 
 function saveGeojson() {
-  const save = document.querySelector('#save')
+  const save = document.querySelector('.control__download')
   save.onclick = function(e) {
     e.preventDefault()
     var data = draw.getAll();
@@ -455,7 +455,7 @@ function saveGeojson() {
       document.getElementById('export').setAttribute('download','data.geojson');
       document.getElementById('export').click();
     } else {
-        alert("Wouldn't you like to draw some data?");
+        alert("No data drawn");
     }
   }
 }
