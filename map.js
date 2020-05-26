@@ -25,6 +25,8 @@ map.on('load', () => {
   map.setLayoutProperty('massbuilds', 'visibility', 'none');
   map.setLayoutProperty('mbta-stops', 'visibility', 'none');
   map.setLayoutProperty('mbta-routes', 'visibility', 'none');
+  map.setLayoutProperty('focus-area', 'visibility', 'none');
+  map.setLayoutProperty('focus-area-buffer', 'visibility', 'none');
   map.on('click', function(e) {
     const selectedFeature = draw.getSelected();
     if (selectedFeature.features.length > 0) {
@@ -156,8 +158,14 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       map.setLayoutProperty('mbta-routes', 'visibility', 'none');
       map.setLayoutProperty('massbuilds', 'visibility', 'none');
       map.setLayoutProperty('taz', 'visibility', 'none');
+      map.setLayoutProperty('focus-area', 'visibility', 'none');
+      map.setLayoutProperty('focus-area-buffer', 'visibility', 'none');
       break;
-    
+    case 'focus-area':
+      toggleLayer('focus-area');
+      toggleLayer('focus-area-buffer');
+      break;
+
     case 'mbta-lines':
       toggleLayer('mbta-routes');
       break;
@@ -167,7 +175,11 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       break;
     
     case 'massbuilds':
-      massbuildsLegend.style.display = "inline";
+      if (massbuildsLegend.style.display === "inline") {
+        massbuildsLegend.style.display = "none";
+      } else {
+        massbuildsLegend.style.display = "inline";
+      }
       toggleLayer('massbuilds');
       break;
 

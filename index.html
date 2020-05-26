@@ -18,6 +18,10 @@
     </main>
     <aside class="sidebar">
       <form class="layers">
+        <h3 class="layers__subtitle">Map features</h3>
+        <input type="checkbox" id="focus-area" autocomplete="off">
+        <label for="focus-area">Focus area and buffer</label><br>
+        
         <input type="checkbox" id="mbta-lines" autocomplete="off">
         <label for="mbta-lines">MBTA + ferry lines</label><br>
 
@@ -27,6 +31,7 @@
         <input type="checkbox" id="massbuilds" autocomplete="off">
         <label for="massbuilds">MassBuilds developments</label><br>
         
+        <h3 class="layers__subtitle">Demographic choropleths</h3>
         <input type="radio" id="population" name="layer__radio-options" autocomplete="off">
         <label for="population">Total population</label><br>
         
@@ -51,6 +56,7 @@
         <input type="radio" id="basic" name="layer__radio-options" autocomplete="off">
         <label for="basic">Basic employment (%)</label><br>
         
+        <h3 class="layers__subtitle">Focus area travel patterns</h3>
         <input type="radio" id="trips_all" name="layer__radio-options" autocomplete="off">
         <label for="trips_all">Trips to focus area</label><br>
         

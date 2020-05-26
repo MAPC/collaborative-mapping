@@ -29,6 +29,11 @@ p {
   padding: 15px;
 }
 
+.layers__subtitle {
+  margin-bottom: 4px;
+  margin-top: 8px;
+}
+
 .popup__title {
   font-family: 'Open Sans';
   font-size: 14px;
