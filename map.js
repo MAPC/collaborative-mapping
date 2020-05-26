@@ -149,7 +149,8 @@ const draw = new MapboxDraw({
   ]
 });
 
-const colors = ['#F15B52', '#F37871', '#F8B4B0', '#FBD2CF', '#F0EFE7'];
+const colors = ["#fef0d9","#fdcc8a","#fc8d59","#e34a33","#b30000"];
+const zeroColor = '#cccccc'
 const choropleth = ['match', ['get', 'ID']];
 
 map.addControl(draw, 'top-left');
@@ -255,14 +256,14 @@ map.on('load', () => {
         new mapboxgl.Popup()
         .setLngLat(e.lngLat)
         .setHTML(`
-          <p>Total population: ${tazData['tabular_Total Population']}</p>
-          <p>Total households: ${tazData['tabular_Total Households']}</p>
-          <p>Total employment: ${tazData['tabular_Total Employment']}</p>
-          <p>Households with 1+ cars (%): ${tazData['tabular_% of Households with 1+ autos']}</p>
-          <p>Households with 1+ workers (%): ${tazData['tabular_% of Households with 1+ workers']}</p>
-          <p>Retail employment (%): ${tazData['tabular_% Retail employment']}</p>
-          <p>Service employment (%): ${tazData['tabular_% Service employment']}</p>
-          <p>Basic employment (%): ${tazData['tabular_% Basic employment']}</p>
+          <p>Total population: ${d3.format(',')(tazData['tabular_Total Population'])}</p>
+          <p>Total households: ${d3.format(',')(tazData['tabular_Total Households'])}</p>
+          <p>Total employment: ${d3.format(',')(tazData['tabular_Total Employment'])}</p>
+          <p>Households with 1+ cars: ${tazData['tabular_% of Households with 1+ autos']}%</p>
+          <p>Households with 1+ workers: ${tazData['tabular_% of Households with 1+ workers']}%</p>
+          <p>Retail employment: ${tazData['tabular_% Retail employment']}%</p>
+          <p>Service employment: ${tazData['tabular_% Service employment']}%</p>
+          <p>Basic employment: ${tazData['tabular_% Basic employment']}%</p>
         `)
         .setMaxWidth('300px')
         .addTo(map);
@@ -289,9 +290,12 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       map.setLayoutProperty('taz', 'visibility', 'none');
       break;
     
-    case 'mbta':
+    case 'mbta-lines':
       toggleLayer('mbta-routes');
-      toggleLayer('mbta-stops');
+      break;
+
+    case 'mbta-stops':
+      toggleLayer('mbta-stops')
       break;
     
     case 'massbuilds':
@@ -302,132 +306,158 @@ document.querySelector('.layers').addEventListener('click', (e) => {
     case 'population':
       choroplethLegend.style.display = "inline";
       entry1.textContent = "1 - 999";
-      entry2.textContent = "1000 - 1999";
-      entry3.textContent = "2000 - 2999";
-      entry4.textContent = "3000 - 3999";
-      entry5.textContent = "4000+";
+      entry2.textContent = "1,000 - 1,999";
+      entry3.textContent = "2,000 - 2,999";
+      entry4.textContent = "3,000 - 3,999";
+      entry5.textContent = "4,000+";
       map.setLayoutProperty('taz', 'visibility', 'visible');
-      map.setPaintProperty('taz', 'fill-color', ["step",
-        ['get', 'tabular_Total Population'],
-        '#E8BCD9', 1, // less than 1
-        '#F7FCFD', 1000, // between 1 and 1000
-        '#CCECE6', 2000, // between 1000 and 2000
-        '#66C2A4', 3000, // between 2000 and 3000
-        '#238B45', 4000,// between 3000 and 4000
-        '#00441B' // over 4000
-      ]);
+      map.setPaintProperty('taz', 'fill-color', 
+        ["step",
+          ['get', 'tabular_Total Population'],
+          zeroColor, 1, // less than 1
+          colors[0], 1000, // between 1 and 999
+          colors[1], 2000, // between 1000 and 1999
+          colors[2], 3000, // between 2000 and 2999
+          colors[3], 4000,// between 3000 and 3999
+          colors[4] // over 4000
+        ]
+      );
       break;
 
     case 'households':
       choroplethLegend.style.display = "inline";
-      entry1.textContent = "1 - 500";
-      entry2.textContent = "501 - 1000";
-      entry3.textContent = "1001 - 1500";
-      entry4.textContent = "1501 - 2000";
-      entry5.textContent = "2500+";
+      entry1.textContent = "1 - 499";
+      entry2.textContent = "500 - 999";
+      entry3.textContent = "1,000 - 1,499";
+      entry4.textContent = "1,500 - 1,999";
+      entry5.textContent = "2,000+";
       map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_Total Households'],
-        '#E8BCD9', 1,
-        '#F7FCFD', 500,
-        '#CCECE6', 1000,
-        '#66C2A4', 1500,
-        '#238B45', 2000,
-        '#00441B', 2500,
-        '#00441B'
+        zeroColor, 1,
+        colors[0], 500,
+        colors[1], 1000,
+        colors[2], 1500,
+        colors[3], 2000,
+        colors[4]
       ]
       );
       break;
 
     case 'employment':
       choroplethLegend.style.display = "inline";
-      entry1.textContent = "1 - 160";
-      entry2.textContent = "161 - 320";
-      entry3.textContent = "321 - 550";
-      entry4.textContent = "551 - 1000";
-      entry5.textContent = "1001+";
+      entry1.textContent = "1 - 159";
+      entry2.textContent = "160 - 319";
+      entry3.textContent = "320 - 549";
+      entry4.textContent = "550 - 999";
+      entry5.textContent = "1,000+";
       map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_Total Employment'],
-        '#E8BCD9', 1,
-        '#F7FCFD', 160,
-        '#CCECE6', 320,
-        '#66C2A4', 550,
-        '#238B45', 1000,
-        '#00441B'
+        zeroColor, 1,
+        colors[0], 160,
+        colors[1], 320,
+        colors[2], 550,
+        colors[3], 1000,
+        colors[4]
       ]
       );
       break;
     
     case 'autos':
       choroplethLegend.style.display = "inline";
+      entry1.textContent = `≤ 59%`;
+      entry2.textContent = "60% - 69%";
+      entry3.textContent = "70% - 79%";
+      entry4.textContent = "80% - 89%";
+      entry5.textContent = "90% - 100%";
       map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% of Households with 1+ autos'],
-        '#E8BCD9', 1,
-        '#F7FCFD', 60,
-        '#CCECE6', 70,
-        '#66C2A4', 80,
-        '#238B45', 90,
-        '#00441B'
+        zeroColor, 1,
+        colors[0], 60,
+        colors[1], 70,
+        colors[2], 80,
+        colors[3], 90,
+        colors[4]
       ]
       );
       break;
 
     case 'workers':
       choroplethLegend.style.display = "inline";
+      entry1.textContent = "≤ 34%";
+      entry2.textContent = "35% - 54%";
+      entry3.textContent = "55% - 69%";
+      entry4.textContent = "70% - 84%";
+      entry5.textContent = "85% - 100%";
       map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% of Households with 1+ workers'],
-        '#E8BCD9', 1,
-        '#F7FCFD', 40,
-        '#CCECE6', 55,
-        '#66C2A4', 70,
-        '#238B45', 85,
-        '#00441B'
+        zeroColor, 1,
+        colors[0], 35,
+        colors[1], 55,
+        colors[2], 70,
+        colors[3], 85,
+        colors[4]
       ]
       );
       break;
 
     case 'retail':
       choroplethLegend.style.display = "inline";
+      entry1.textContent = "1 - 5%";
+      entry2.textContent = "6% - 9%";
+      entry3.textContent = "10% - 14%";
+      entry4.textContent = "15% - 24%";
+      entry5.textContent = "≥ 25%";
       map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% Retail employment'],
-        '#E8BCD9', 1,
-        '#F7FCFD', 5,
-        '#CCECE6', 9,
-        '#66C2A4', 14,
-        '#238B45', 24,
-        '#00441B'
+        zeroColor, 1,
+        colors[0], 6,
+        colors[1], 10,
+        colors[2], 15,
+        colors[3], 25,
+        colors[4]
       ]);
       break;
 
     case 'service':
       choroplethLegend.style.display = "inline";
+      entry1.textContent = "≤ 44%";
+      entry2.textContent = "45% - 59%";
+      entry3.textContent = "60% - 69%";
+      entry4.textContent = "70% - 79%";
+      entry5.textContent = "80% - 100%";
       map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% Service employment'],
-        '#E8BCD9', 1,
-        '#F7FCFD', 45,
-        '#CCECE6', 58,
-        '#66C2A4', 68,
-        '#238B45', 78,
-        '#00441B'
+        zeroColor, 1,
+        colors[0], 45,
+        colors[1], 60,
+        colors[2], 70,
+        colors[3], 80,
+        colors[4]
       ]);
       break;
 
     case 'basic':
       choroplethLegend.style.display = "inline";
+      entry1.textContent = "1% - 9%";
+      entry2.textContent = "10% - 19%";
+      entry3.textContent = "20% - 29%";
+      entry4.textContent = "30% - 39%";
+      entry5.textContent = "≥ 40%";
       map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% Basic employment'],
-        '#E8BCD9', 1,
-        '#F7FCFD', 9,
-        '#CCECE6', 17,
-        '#66C2A4', 29,
-        '#238B45', 35,
-        '#00441B'
+        zeroColor, 1,
+        colors[0], 10,
+        colors[1], 20,
+        colors[2], 30,
+        colors[3], 40,
+        colors[4]
       ]);
       break;
   }
@@ -465,10 +495,3 @@ function setTitle(featureId, popupObj) {
   draw.setFeatureProperty(featureId, 'user__notes', document.querySelector('#notes').value);
   popupObj.remove();
 }
-
-// window.addEventListener('beforeunload', function (e) {
-//   var confirmationMessage = "\o/";
-
-//   (e || window.event).returnValue = confirmationMessage; //Gecko + IE
-//   return confirmationMessage;  
-// });

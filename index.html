@@ -18,8 +18,11 @@
     </main>
     <aside class="sidebar">
       <form class="layers">
-        <input type="checkbox" id="mbta" checked autocomplete="off">
-        <label for="mbta">MBTA + ferry lines</label><br>
+        <input type="checkbox" id="mbta-lines" checked autocomplete="off">
+        <label for="mbta-lines">MBTA + ferry lines</label><br>
+
+        <input type="checkbox" id="mbta-stops" checked autocomplete="off">
+        <label for="mbta-stops">MBTA + ferry stops</label><br>
 
         <input type="checkbox" id="massbuilds" autocomplete="off">
         <label for="massbuilds">MassBuilds developments</label><br>
@@ -48,7 +51,7 @@
         <input type="radio" id="basic" name="layer__radio-options" autocomplete="off">
         <label for="basic">Basic employment (%)</label><br>
         
-        <input type="reset" value="Reset choropleth" id="reset">
+        <input type="reset" value="Reset map settings" id="reset">
       </form>
       <svg width="200" height="100" class="legend legend__massbuilds">
         <text x="0" y="16" class="legend__title">MassBuilds</text>
@@ -63,21 +66,22 @@
       </svg>
       <svg width="200" height="140" class="legend legend__choropleth">
         <text x="0" y="16" class="legend__title">Choropleth scale</text>
-        <rect x="10" y="24" width="16" height="16" fill="#e8bcd9" />
+        <rect x="10" y="24" width="16" height="16" fill="#cccccc" />
         <text x="30" y="36" id="legend-0">0</text>
-        <rect x="10" y="44" width="16" height="16" fill="#F7FCFD" />
+        <rect x="10" y="44" width="16" height="16" fill="#fef0d9" />
         <text x="30" y="56" id="legend-1"></text>
-        <rect x="10" y="64" width="16" height="16" fill="#CCECE6" />
+        <rect x="10" y="64" width="16" height="16" fill="#fdcc8a" />
         <text x="30" y="76" id="legend-2"></text>
-        <rect x="10" y="84" width="16" height="16" fill="#66C2A4" />
+        <rect x="10" y="84" width="16" height="16" fill="#fc8d59" />
         <text x="30" y="96" id="legend-3"></text>
-        <rect x="10" y="104" width="16" height="16" fill="#238B45" />
+        <rect x="10" y="104" width="16" height="16" fill="#e34a33" />
         <text x="30" y="116" id="legend-4"></text>
-        <rect x="10" y="124" width="16" height="16" fill="#00441B" />
+        <rect x="10" y="124" width="16" height="16" fill="#b30000" />
         <text x="30" y="136" id="legend-5"></text>
       </svg>
       <a id="export"></a>
     </aside>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.js"></script>
     <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.js"></script>
     <script src="map.js"></script>
