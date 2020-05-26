@@ -69,7 +69,6 @@ map.on('load', () => {
         [e.point.x, e.point.y],
         { layers: ['taz', 'mbta-stops', 'mbta-routes', 'massbuilds'] },
       );
-      console.log(clickedData)
       if (clickedData.some(item => item.properties.layer != null)) {
         const mbtaData = clickedData.find(item => item.properties.layer != undefined).properties;
           if (mbtaData.layer === 'Commuter-rail_stops') {
@@ -132,6 +131,7 @@ map.on('load', () => {
           <p>Retail employment: ${tazData['tabular_% Retail employment']}%</p>
           <p>Service employment: ${tazData['tabular_% Service employment']}%</p>
           <p>Basic employment: ${tazData['tabular_% Basic employment']}%</p>
+          <p>Trips to focus area: ${tazData['Trips_to_focus_trips_all'].toFixed(2)}</p>
         `)
         .setMaxWidth('300px')
         .addTo(map);
@@ -328,6 +328,30 @@ document.querySelector('.layers').addEventListener('click', (e) => {
         colors[4]
       ]);
       break;
+    
+    case 'trips_all':
+      choroplethLegend.style.display = "inline";
+      entry1.textContent = "0 - 1";
+      entry2.textContent = "1 - 2";
+      entry3.textContent = "2 - 4";
+      entry4.textContent = "4 - 16";
+      entry5.textContent = "16 - 224";
+      map.setLayoutProperty('taz', 'visibility', 'visible');
+      map.setPaintProperty('taz', 'fill-color',
+      ["case",
+        ['has', 'Trips_to_focus_trips_all'],
+          ["step",
+          ["to-number", ['get', 'Trips_to_focus_trips_all'], 999],
+          colors[0], 1,
+          colors[1], 2,
+          colors[2], 4,
+          colors[3], 16,
+          colors[4], 224,
+          zeroColor
+        ],
+        zeroColor
+      ])
+      break;
   }
 });
 
@@ -363,10 +387,3 @@ function setTitle(featureId, popupObj) {
   draw.setFeatureProperty(featureId, 'user__notes', document.querySelector('#notes').value);
   popupObj.remove();
 }
-
-window.addEventListener('beforeunload', function (e) {
-  // Cancel the event
-  e.preventDefault(); // If you prevent default behavior in Mozilla Firefox prompt will always be shown
-  // Chrome requires returnValue to be set
-  e.returnValue = '';
-});
