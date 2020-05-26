@@ -23,6 +23,7 @@ p {
 .sidebar {
   background: rgba(255, 255, 255, .5);
   width: 300px;
+  overflow-y: scroll;
 }
 
 .layers {

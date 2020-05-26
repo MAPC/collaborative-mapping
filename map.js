@@ -27,6 +27,7 @@ map.on('load', () => {
   map.setLayoutProperty('mbta-routes', 'visibility', 'none');
   map.setLayoutProperty('focus-area', 'visibility', 'none');
   map.setLayoutProperty('focus-area-buffer', 'visibility', 'none');
+  map.setLayoutProperty('2040-blocks', 'visibility', 'none');
   map.on('click', function(e) {
     const selectedFeature = draw.getSelected();
     if (selectedFeature.features.length > 0) {
@@ -69,7 +70,7 @@ map.on('load', () => {
     } else {
       const clickedData = map.queryRenderedFeatures(
         [e.point.x, e.point.y],
-        { layers: ['taz', 'mbta-stops', 'mbta-routes', 'massbuilds'] },
+        { layers: ['taz', 'mbta-stops', 'mbta-routes', 'massbuilds', '2040-blocks'] },
       );
       if (clickedData.some(item => item.properties.layer != null)) {
         const mbtaData = clickedData.find(item => item.properties.layer != undefined).properties;
@@ -120,7 +121,16 @@ map.on('load', () => {
           `)
           .setMaxWidth('300px')
           .addTo(map);
-      } else {
+      } else if (clickedData.some(item => item.properties.blockID != null)) {
+        const projectedData = clickedData.find(item => item.properties.blockID != null).properties;
+        new mapboxgl.Popup()
+        .setLngLat(e.lngLat)
+        .setHTML(`
+          <p>LRTP 2040 Households: ${d3.format(',')(projectedData.lrtp_HH40)}</p>
+        `)
+        .setMaxWidth('300px')
+        .addTo(map);
+      }else {
         const tazData = clickedData.find(item => item.properties['tabular_Total Population'] != null).properties;
         new mapboxgl.Popup()
         .setLngLat(e.lngLat)
@@ -160,6 +170,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       map.setLayoutProperty('taz', 'visibility', 'none');
       map.setLayoutProperty('focus-area', 'visibility', 'none');
       map.setLayoutProperty('focus-area-buffer', 'visibility', 'none');
+      map.setLayoutProperty('2040-blocks', 'visibility', 'none');
       break;
     case 'focus-area':
       toggleLayer('focus-area');
@@ -363,6 +374,41 @@ document.querySelector('.layers').addEventListener('click', (e) => {
         ],
         zeroColor
       ])
+      break;
+
+    case 'lrtp_hh':
+      choroplethLegend.style.display = "inline";
+      map.setLayoutProperty('2040-blocks', 'visibility', 'visible');
+      map.setPaintProperty('2040-blocks', 'fill-color', ["step",
+        ['get', 'lrtp_HH40'],
+        zeroColor, 1, // 5
+        colors[0], 6, // 25
+        colors[1], 26, // 50
+        colors[2], 51, // 100
+        colors[3], 101,
+        colors[4]
+      ]);
+      break;
+
+    case 'lrtp_emp':
+      choroplethLegend.style.display = "inline";
+      map.setLayoutProperty('2040-blocks', 'visibility', 'visible');
+      break;
+    case 'feir_hh':
+      choroplethLegend.style.display = "inline";
+      map.setLayoutProperty('2040-blocks', 'visibility', 'visible');
+      break;
+    case 'feir_emp':
+      choroplethLegend.style.display = "inline";
+      map.setLayoutProperty('2040-blocks', 'visibility', 'visible');
+      break;
+    case 'fmax_hh':
+      choroplethLegend.style.display = "inline";
+      map.setLayoutProperty('2040-blocks', 'visibility', 'visible');
+      break;
+    case 'fmax_emp':
+      choroplethLegend.style.display = "inline";
+      map.setLayoutProperty('2040-blocks', 'visibility', 'visible');
       break;
   }
 });
