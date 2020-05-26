@@ -23,6 +23,8 @@ map.addControl(draw, 'top-left');
 map.on('load', () => {
   map.setLayoutProperty('taz', 'visibility', 'none');
   map.setLayoutProperty('massbuilds', 'visibility', 'none');
+  map.setLayoutProperty('mbta-stops', 'visibility', 'none');
+  map.setLayoutProperty('mbta-routes', 'visibility', 'none');
   map.on('click', function(e) {
     const selectedFeature = draw.getSelected();
     if (selectedFeature.features.length > 0) {
@@ -150,8 +152,8 @@ document.querySelector('.layers').addEventListener('click', (e) => {
     case 'reset':
       choroplethLegend.style.display = "none";
       massbuildsLegend.style.display = "none";
-      map.setLayoutProperty('mbta-stops', 'visibility', 'visible');
-      map.setLayoutProperty('mbta-routes', 'visibility', 'visible');
+      map.setLayoutProperty('mbta-stops', 'visibility', 'none');
+      map.setLayoutProperty('mbta-routes', 'visibility', 'none');
       map.setLayoutProperty('massbuilds', 'visibility', 'none');
       map.setLayoutProperty('taz', 'visibility', 'none');
       break;
