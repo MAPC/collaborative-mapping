@@ -7,6 +7,7 @@ const map = new mapboxgl.Map({
 });
 const colors = ["#fef0d9","#fdcc8a","#fc8d59","#e34a33","#b30000"];
 const zeroColor = '#cccccc';
+window.layerType = '';
 
 const draw = new MapboxDraw({
   displayControlsDefault: false,
@@ -28,6 +29,7 @@ map.on('load', () => {
   map.setLayoutProperty('focus-area', 'visibility', 'none');
   map.setLayoutProperty('focus-area-buffer', 'visibility', 'none');
   map.setLayoutProperty('2040-blocks', 'visibility', 'none');
+  map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
   map.on('click', function(e) {
     const selectedFeature = draw.getSelected();
     if (selectedFeature.features.length > 0) {
@@ -70,7 +72,7 @@ map.on('load', () => {
     } else {
       const clickedData = map.queryRenderedFeatures(
         [e.point.x, e.point.y],
-        { layers: ['taz', 'mbta-stops', 'mbta-routes', 'massbuilds', '2040-blocks'] },
+        { layers: ['taz', 'mbta-stops', 'mbta-routes', 'massbuilds', '2040-blocks', 'trips-to-focus'] },
       );
       if (clickedData.some(item => item.properties.layer != null)) {
         const mbtaData = clickedData.find(item => item.properties.layer != undefined).properties;
@@ -135,7 +137,21 @@ map.on('load', () => {
         `)
         .setMaxWidth('300px')
         .addTo(map);
-      }else {
+      } else if (clickedData.some(item => item.properties['trips_all'] != null)) {
+        const tripData = clickedData.find(item => item.properties['trips_all'] != null).properties;
+        new mapboxgl.Popup()
+          .setLngLat(e.lngLat)
+          .setHTML(`
+            <p>Total trips: ${d3.format(',.2f')(tripData['trips_all'])}</p>
+            <p>Transit trips: ${d3.format(',.2f')(tripData['trips_transit'])}</p>
+            <p>Auto trips (driver): ${d3.format(',.2f')(tripData['trips_driver'])}</p>
+            <p>Auto trips (passenger): ${d3.format(',.2f')(tripData['trips_auto_pax'])}</p>
+            <p>Bike trips: ${d3.format(',.2f')(tripData['trips_bike'])}</p>
+            <p>Walking trips: ${d3.format(',.2f')(tripData['trips_walk'])}</p>
+          `)
+          .setMaxWidth('300px')
+          .addTo(map);
+      } else {
         const tazData = clickedData.find(item => item.properties['tabular_Total Population'] != null).properties;
         new mapboxgl.Popup()
         .setLngLat(e.lngLat)
@@ -148,7 +164,6 @@ map.on('load', () => {
           <p>Retail employment: ${tazData['tabular_% Retail employment']}%</p>
           <p>Service employment: ${tazData['tabular_% Service employment']}%</p>
           <p>Basic employment: ${tazData['tabular_% Basic employment']}%</p>
-          <p>Trips to focus area: ${tazData['Trips_to_focus_trips_all'].toFixed(2)}</p>
         `)
         .setMaxWidth('300px')
         .addTo(map);
@@ -176,6 +191,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       map.setLayoutProperty('focus-area', 'visibility', 'none');
       map.setLayoutProperty('focus-area-buffer', 'visibility', 'none');
       map.setLayoutProperty('2040-blocks', 'visibility', 'none');
+      map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
       break;
     case 'focus-area':
       toggleLayer('focus-area');
@@ -207,6 +223,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry4.textContent = "3,000 - 3,999";
       entry5.textContent = "4,000+";
       map.setLayoutProperty('2040-blocks', 'visibility', 'none');
+      map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
       map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', 
         ["step",
@@ -229,6 +246,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry4.textContent = "1,500 - 1,999";
       entry5.textContent = "2,000+";
       map.setLayoutProperty('2040-blocks', 'visibility', 'none');
+      map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
       map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_Total Households'],
@@ -250,6 +268,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry4.textContent = "550 - 999";
       entry5.textContent = "1,000+";
       map.setLayoutProperty('2040-blocks', 'visibility', 'none');
+      map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
       map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_Total Employment'],
@@ -271,6 +290,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry4.textContent = "80% - 89%";
       entry5.textContent = "90% - 100%";
       map.setLayoutProperty('2040-blocks', 'visibility', 'none');
+      map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
       map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% of Households with 1+ autos'],
@@ -292,6 +312,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry4.textContent = "70% - 84%";
       entry5.textContent = "85% - 100%";
       map.setLayoutProperty('2040-blocks', 'visibility', 'none');
+      map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
       map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% of Households with 1+ workers'],
@@ -313,6 +334,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry4.textContent = "15% - 24%";
       entry5.textContent = "≥ 25%";
       map.setLayoutProperty('2040-blocks', 'visibility', 'none');
+      map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
       map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% Retail employment'],
@@ -333,6 +355,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry4.textContent = "70% - 79%";
       entry5.textContent = "80% - 100%";
       map.setLayoutProperty('2040-blocks', 'visibility', 'none');
+      map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
       map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% Service employment'],
@@ -353,6 +376,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry4.textContent = "30% - 39%";
       entry5.textContent = "≥ 40%";
       map.setLayoutProperty('2040-blocks', 'visibility', 'none');
+      map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
       map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% Basic employment'],
@@ -373,12 +397,13 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry4.textContent = "4 - 16";
       entry5.textContent = "16 - 224";
       map.setLayoutProperty('2040-blocks', 'visibility', 'none');
-      map.setLayoutProperty('taz', 'visibility', 'visible');
-      map.setPaintProperty('taz', 'fill-color',
+      map.setLayoutProperty('taz', 'visibility', 'none');
+      map.setLayoutProperty('trips-to-focus', 'visibility', 'visible');
+      map.setPaintProperty('trips-to-focus', 'fill-color',
       ["case",
-        ['has', 'Trips_to_focus_trips_all'],
+        ['has', 'trips_all'],
           ["step",
-          ["to-number", ['get', 'Trips_to_focus_trips_all'], 999],
+          ["to-number", ['get', 'trips_all'], 999],
           colors[0], 1,
           colors[1], 2,
           colors[2], 4,
@@ -398,6 +423,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry4.textContent = "51 - 100";
       entry5.textContent = "101+";
       map.setLayoutProperty('taz', 'visibility', 'none');
+      map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
       map.setLayoutProperty('2040-blocks', 'visibility', 'visible');
       map.setPaintProperty('2040-blocks', 'fill-color', ["step",
         ['get', 'lrtp_HH40'],
@@ -418,6 +444,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry4.textContent = "51 - 100";
       entry5.textContent = "101+";
       map.setLayoutProperty('taz', 'visibility', 'none');
+      map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
       map.setLayoutProperty('2040-blocks', 'visibility', 'visible');
       map.setPaintProperty('2040-blocks', 'fill-color', ["step",
         ['get', 'lrtp_EMP40'],
@@ -437,6 +464,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry4.textContent = "51 - 100";
       entry5.textContent = "101+";
       map.setLayoutProperty('taz', 'visibility', 'none');
+      map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
       map.setLayoutProperty('2040-blocks', 'visibility', 'visible');
       map.setPaintProperty('2040-blocks', 'fill-color', ["step",
         ['get', 'feir_HH40'],
@@ -456,6 +484,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry4.textContent = "51 - 100";
       entry5.textContent = "101+";
       map.setLayoutProperty('taz', 'visibility', 'none');
+      map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
       map.setLayoutProperty('2040-blocks', 'visibility', 'visible');
       map.setPaintProperty('2040-blocks', 'fill-color', ["step",
         ['get', 'feir_EMP40'],
@@ -475,6 +504,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry4.textContent = "51 - 100";
       entry5.textContent = "101+";
       map.setLayoutProperty('taz', 'visibility', 'none');
+      map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
       map.setLayoutProperty('2040-blocks', 'visibility', 'visible');
       map.setPaintProperty('2040-blocks', 'fill-color', ["step",
         ['get', 'fmax_HH40'],
@@ -494,6 +524,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry4.textContent = "51 - 100";
       entry5.textContent = "101+";
       map.setLayoutProperty('taz', 'visibility', 'none');
+      map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
       map.setLayoutProperty('2040-blocks', 'visibility', 'visible');
       map.setPaintProperty('2040-blocks', 'fill-color', ["step",
         ['get', 'fmax_EMP40'],
