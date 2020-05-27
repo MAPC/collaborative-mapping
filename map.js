@@ -127,6 +127,11 @@ map.on('load', () => {
         .setLngLat(e.lngLat)
         .setHTML(`
           <p>LRTP 2040 Households: ${d3.format(',')(projectedData.lrtp_HH40)}</p>
+          <p>LRTP 2040 Employment: ${d3.format(',')(projectedData.lrtp_EMP40)}</p>
+          <p>FEIR 2040 Households: ${d3.format(',')(projectedData.feir_HH40)}</p>
+          <p>FEIR 2040 Employment: ${d3.format(',')(projectedData.feir_EMP40)}</p>
+          <p>FMAX 2040 Households: ${d3.format(',')(projectedData.fmax_HH40)}</p>
+          <p>FMAX 2040 Employment: ${d3.format(',')(projectedData.fmax_EMP40)}</p>
         `)
         .setMaxWidth('300px')
         .addTo(map);
