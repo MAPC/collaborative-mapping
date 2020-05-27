@@ -399,21 +399,137 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       map.setLayoutProperty('2040-blocks', 'visibility', 'none');
       map.setLayoutProperty('taz', 'visibility', 'none');
       map.setLayoutProperty('trips-to-focus', 'visibility', 'visible');
-      map.setPaintProperty('trips-to-focus', 'fill-color',
-      ["case",
-        ['has', 'trips_all'],
-          ["step",
-          ["to-number", ['get', 'trips_all'], 999],
-          colors[0], 1,
-          colors[1], 2,
-          colors[2], 4,
-          colors[3], 16,
-          colors[4], 224,
-          zeroColor
-        ],
-        zeroColor
-      ])
+      map.setPaintProperty('trips-to-focus', 'fill-opacity', 1);
+      map.setPaintProperty('trips-to-focus', 'fill-color', ["step",
+        ['get', 'trips_all'],
+        zeroColor, 0,
+        colors[0], 1,
+        colors[1], 2,
+        colors[2], 4,
+        colors[3], 16,
+        colors[4]
+      ]);
       break;
+    
+    case 'trips_transit':
+      choroplethLegend.style.display = "inline";
+      entry1.textContent = "0 - .5";
+      entry2.textContent = "0.5 - 1";
+      entry3.textContent = "1 - 1.5";
+      entry4.textContent = "1.5 - 2";
+      entry5.textContent = "2+";
+      map.setLayoutProperty('2040-blocks', 'visibility', 'none');
+      map.setLayoutProperty('taz', 'visibility', 'none');
+      map.setLayoutProperty('trips-to-focus', 'visibility', 'visible');
+      map.setPaintProperty('trips-to-focus', 'fill-opacity', 1);
+      map.setPaintProperty('trips-to-focus', 'fill-color', ["step",
+        ['get', 'trips_transit'],
+        zeroColor, 0,
+        colors[0], .5,
+        colors[1], 1,
+        colors[2], 1.5,
+        colors[3], 2,
+        colors[4]
+      ]);
+      break;
+    
+    case 'trips_auto_pax':
+      choroplethLegend.style.display = "inline";
+      entry1.textContent = "0 - 2.5";
+      entry2.textContent = "2.5 - 5";
+      entry3.textContent = "5 - 10";
+      entry4.textContent = "10 - 20";
+      entry5.textContent = "20+";
+      map.setLayoutProperty('2040-blocks', 'visibility', 'none');
+      map.setLayoutProperty('taz', 'visibility', 'none');
+      map.setLayoutProperty('trips-to-focus', 'visibility', 'visible');
+      map.setPaintProperty('trips-to-focus', 'fill-opacity', 1);
+      map.setPaintProperty('trips-to-focus', 'fill-color', ["step",
+        ['get', 'trips_auto_pax'],
+        zeroColor, 0,
+        colors[0], 2.5,
+        colors[1], 5,
+        colors[2], 10,
+        colors[3], 20,
+        colors[4]
+      ]);
+      break;
+
+    case 'trips_driver':
+        choroplethLegend.style.display = "inline";
+        entry1.textContent = "0 - 5";
+        entry2.textContent = "5 - 10";
+        entry3.textContent = "10 - 25";
+        entry4.textContent = "25 - 50";
+        entry5.textContent = "50+";
+        map.setLayoutProperty('2040-blocks', 'visibility', 'none');
+        map.setLayoutProperty('taz', 'visibility', 'none');
+        map.setLayoutProperty('trips-to-focus', 'visibility', 'visible');
+        map.setPaintProperty('trips-to-focus', 'fill-opacity', 1);
+        map.setPaintProperty('trips-to-focus', 'fill-color', ["step",
+          ['get', 'trips_driver'],
+          zeroColor, 0,
+          colors[0], 5,
+          colors[1], 10,
+          colors[2], 25,
+          colors[3], 50,
+          colors[4]
+        ]);
+        break;
+
+      case 'trips_bike':
+        choroplethLegend.style.display = "inline";
+        entry1.textContent = "0 - 2.5";
+        entry2.textContent = "2.5 - 5";
+        entry3.textContent = "5 - 10";
+        entry4.textContent = "10 - 15";
+        entry5.textContent = "15+";
+        map.setLayoutProperty('2040-blocks', 'visibility', 'none');
+        map.setLayoutProperty('taz', 'visibility', 'none');
+        map.setLayoutProperty('trips-to-focus', 'visibility', 'visible');
+        map.setPaintProperty('trips-to-focus', 'fill-color', ["step",
+          ['get', 'trips_bike'],
+          zeroColor, 0,
+          colors[0], 2.5,
+          colors[1], 5,
+          colors[2], 10,
+          colors[3], 15,
+          colors[4]
+        ]);
+        map.setPaintProperty('trips-to-focus', 'fill-opacity',
+          ["case",
+            ['has', 'trips_bike'],
+              1,
+            0
+        ])
+        break;
+
+      case 'trips_walk':
+        choroplethLegend.style.display = "inline";
+        entry1.textContent = "0 - 5";
+        entry2.textContent = "5 - 20";
+        entry3.textContent = "20 - 50";
+        entry4.textContent = "50 - 100";
+        entry5.textContent = "50+";
+        map.setLayoutProperty('2040-blocks', 'visibility', 'none');
+        map.setLayoutProperty('taz', 'visibility', 'none');
+        map.setLayoutProperty('trips-to-focus', 'visibility', 'visible');
+        map.setPaintProperty('trips-to-focus', 'fill-color', ["step",
+          ['get', 'trips_walk'],
+          zeroColor, 0,
+          colors[0], 5,
+          colors[1], 20,
+          colors[2], 50,
+          colors[3], 100,
+          colors[4]
+        ]);
+        map.setPaintProperty('trips-to-focus', 'fill-opacity',
+          ["case",
+            ['has', 'trips_walk'],
+              1,
+            0
+        ])
+        break;
 
     case 'lrtp_hh':
       choroplethLegend.style.display = "inline";
@@ -427,10 +543,10 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       map.setLayoutProperty('2040-blocks', 'visibility', 'visible');
       map.setPaintProperty('2040-blocks', 'fill-color', ["step",
         ['get', 'lrtp_HH40'],
-        zeroColor, 1, // 5
-        colors[0], 6, // 25
-        colors[1], 26, // 50
-        colors[2], 51, // 100
+        zeroColor, 1,
+        colors[0], 6,
+        colors[1], 26,
+        colors[2], 51,
         colors[3], 101,
         colors[4]
       ]);
@@ -448,10 +564,10 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       map.setLayoutProperty('2040-blocks', 'visibility', 'visible');
       map.setPaintProperty('2040-blocks', 'fill-color', ["step",
         ['get', 'lrtp_EMP40'],
-        zeroColor, 1, // 0
-        colors[0], 6, // 5
-        colors[1], 21, // 20
-        colors[2], 51, // 100
+        zeroColor, 1,
+        colors[0], 6,
+        colors[1], 21,
+        colors[2], 51,
         colors[3], 101,
         colors[4]
       ]);
@@ -468,10 +584,10 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       map.setLayoutProperty('2040-blocks', 'visibility', 'visible');
       map.setPaintProperty('2040-blocks', 'fill-color', ["step",
         ['get', 'feir_HH40'],
-        zeroColor, 1, // 0
-        colors[0], 6, // 5
-        colors[1], 26, // 25
-        colors[2], 51, // 50
+        zeroColor, 1,
+        colors[0], 6,
+        colors[1], 26,
+        colors[2], 51,
         colors[3], 101,
         colors[4]
       ]);
@@ -488,10 +604,10 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       map.setLayoutProperty('2040-blocks', 'visibility', 'visible');
       map.setPaintProperty('2040-blocks', 'fill-color', ["step",
         ['get', 'feir_EMP40'],
-        zeroColor, 1, // 0
-        colors[0], 6, // 5
-        colors[1], 21, // 20
-        colors[2], 51, // 50
+        zeroColor, 1,
+        colors[0], 6,
+        colors[1], 21,
+        colors[2], 51,
         colors[3], 101,
         colors[4]
       ]);
@@ -508,10 +624,10 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       map.setLayoutProperty('2040-blocks', 'visibility', 'visible');
       map.setPaintProperty('2040-blocks', 'fill-color', ["step",
         ['get', 'fmax_HH40'],
-        zeroColor, 1, // 0
-        colors[0], 6, // 5
-        colors[1], 26, // 25
-        colors[2], 51, // 50
+        zeroColor, 1,
+        colors[0], 6,
+        colors[1], 26,
+        colors[2], 51,
         colors[3], 101,
         colors[4]
       ]);
@@ -528,10 +644,10 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       map.setLayoutProperty('2040-blocks', 'visibility', 'visible');
       map.setPaintProperty('2040-blocks', 'fill-color', ["step",
         ['get', 'fmax_EMP40'],
-        zeroColor, 1, // 0
-        colors[0], 6, // 5
-        colors[1], 26, // 25
-        colors[2], 51, // 50
+        zeroColor, 1,
+        colors[0], 6,
+        colors[1], 26,
+        colors[2], 51,
         colors[3], 101,
         colors[4]
       ]);
