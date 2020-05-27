@@ -201,6 +201,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "2,000 - 2,999";
       entry4.textContent = "3,000 - 3,999";
       entry5.textContent = "4,000+";
+      map.setLayoutProperty('2040-blocks', 'visibility', 'none');
       map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', 
         ["step",
@@ -222,6 +223,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "1,000 - 1,499";
       entry4.textContent = "1,500 - 1,999";
       entry5.textContent = "2,000+";
+      map.setLayoutProperty('2040-blocks', 'visibility', 'none');
       map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_Total Households'],
@@ -242,6 +244,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "320 - 549";
       entry4.textContent = "550 - 999";
       entry5.textContent = "1,000+";
+      map.setLayoutProperty('2040-blocks', 'visibility', 'none');
       map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_Total Employment'],
@@ -262,6 +265,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "70% - 79%";
       entry4.textContent = "80% - 89%";
       entry5.textContent = "90% - 100%";
+      map.setLayoutProperty('2040-blocks', 'visibility', 'none');
       map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% of Households with 1+ autos'],
@@ -282,6 +286,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "55% - 69%";
       entry4.textContent = "70% - 84%";
       entry5.textContent = "85% - 100%";
+      map.setLayoutProperty('2040-blocks', 'visibility', 'none');
       map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% of Households with 1+ workers'],
@@ -302,6 +307,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "10% - 14%";
       entry4.textContent = "15% - 24%";
       entry5.textContent = "≥ 25%";
+      map.setLayoutProperty('2040-blocks', 'visibility', 'none');
       map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% Retail employment'],
@@ -321,6 +327,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "60% - 69%";
       entry4.textContent = "70% - 79%";
       entry5.textContent = "80% - 100%";
+      map.setLayoutProperty('2040-blocks', 'visibility', 'none');
       map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% Service employment'],
@@ -340,6 +347,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "20% - 29%";
       entry4.textContent = "30% - 39%";
       entry5.textContent = "≥ 40%";
+      map.setLayoutProperty('2040-blocks', 'visibility', 'none');
       map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% Basic employment'],
@@ -359,6 +367,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "2 - 4";
       entry4.textContent = "4 - 16";
       entry5.textContent = "16 - 224";
+      map.setLayoutProperty('2040-blocks', 'visibility', 'none');
       map.setLayoutProperty('taz', 'visibility', 'visible');
       map.setPaintProperty('taz', 'fill-color',
       ["case",
@@ -378,6 +387,12 @@ document.querySelector('.layers').addEventListener('click', (e) => {
 
     case 'lrtp_hh':
       choroplethLegend.style.display = "inline";
+      entry1.textContent = "1 - 5";
+      entry2.textContent = "6 - 25";
+      entry3.textContent = "26 - 50";
+      entry4.textContent = "51 - 100";
+      entry5.textContent = "101+";
+      map.setLayoutProperty('taz', 'visibility', 'none');
       map.setLayoutProperty('2040-blocks', 'visibility', 'visible');
       map.setPaintProperty('2040-blocks', 'fill-color', ["step",
         ['get', 'lrtp_HH40'],
@@ -392,23 +407,98 @@ document.querySelector('.layers').addEventListener('click', (e) => {
 
     case 'lrtp_emp':
       choroplethLegend.style.display = "inline";
+      entry1.textContent = "1 - 5";
+      entry2.textContent = "6 - 20";
+      entry3.textContent = "21 - 50";
+      entry4.textContent = "51 - 100";
+      entry5.textContent = "101+";
+      map.setLayoutProperty('taz', 'visibility', 'none');
       map.setLayoutProperty('2040-blocks', 'visibility', 'visible');
+      map.setPaintProperty('2040-blocks', 'fill-color', ["step",
+        ['get', 'lrtp_EMP40'],
+        zeroColor, 1, // 0
+        colors[0], 6, // 5
+        colors[1], 21, // 20
+        colors[2], 51, // 100
+        colors[3], 101,
+        colors[4]
+      ]);
       break;
     case 'feir_hh':
       choroplethLegend.style.display = "inline";
+      entry1.textContent = "1 - 5";
+      entry2.textContent = "6 - 25";
+      entry3.textContent = "26 - 50";
+      entry4.textContent = "51 - 100";
+      entry5.textContent = "101+";
+      map.setLayoutProperty('taz', 'visibility', 'none');
       map.setLayoutProperty('2040-blocks', 'visibility', 'visible');
+      map.setPaintProperty('2040-blocks', 'fill-color', ["step",
+        ['get', 'feir_HH40'],
+        zeroColor, 1, // 0
+        colors[0], 6, // 5
+        colors[1], 26, // 25
+        colors[2], 51, // 50
+        colors[3], 101,
+        colors[4]
+      ]);
       break;
     case 'feir_emp':
       choroplethLegend.style.display = "inline";
+      entry1.textContent = "1 - 5";
+      entry2.textContent = "6 - 20";
+      entry3.textContent = "21 - 50";
+      entry4.textContent = "51 - 100";
+      entry5.textContent = "101+";
+      map.setLayoutProperty('taz', 'visibility', 'none');
       map.setLayoutProperty('2040-blocks', 'visibility', 'visible');
+      map.setPaintProperty('2040-blocks', 'fill-color', ["step",
+        ['get', 'feir_EMP40'],
+        zeroColor, 1, // 0
+        colors[0], 6, // 5
+        colors[1], 21, // 20
+        colors[2], 51, // 50
+        colors[3], 101,
+        colors[4]
+      ]);
       break;
     case 'fmax_hh':
       choroplethLegend.style.display = "inline";
+      entry1.textContent = "1 - 5";
+      entry2.textContent = "6 - 25";
+      entry3.textContent = "26 - 50";
+      entry4.textContent = "51 - 100";
+      entry5.textContent = "101+";
+      map.setLayoutProperty('taz', 'visibility', 'none');
       map.setLayoutProperty('2040-blocks', 'visibility', 'visible');
+      map.setPaintProperty('2040-blocks', 'fill-color', ["step",
+        ['get', 'fmax_HH40'],
+        zeroColor, 1, // 0
+        colors[0], 6, // 5
+        colors[1], 26, // 25
+        colors[2], 51, // 50
+        colors[3], 101,
+        colors[4]
+      ]);
       break;
     case 'fmax_emp':
       choroplethLegend.style.display = "inline";
+      entry1.textContent = "1 - 5";
+      entry2.textContent = "6 - 25";
+      entry3.textContent = "26 - 50";
+      entry4.textContent = "51 - 100";
+      entry5.textContent = "101+";
+      map.setLayoutProperty('taz', 'visibility', 'none');
       map.setLayoutProperty('2040-blocks', 'visibility', 'visible');
+      map.setPaintProperty('2040-blocks', 'fill-color', ["step",
+        ['get', 'fmax_EMP40'],
+        zeroColor, 1, // 0
+        colors[0], 6, // 5
+        colors[1], 26, // 25
+        colors[2], 51, // 50
+        colors[3], 101,
+        colors[4]
+      ]);
       break;
   }
 });
