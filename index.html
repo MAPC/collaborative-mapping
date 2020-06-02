@@ -79,23 +79,37 @@
         <label for="fmax_emp">FMAX 2040 employment projection</label><br>
 
         <h3 class="layers__subtitle">Average trips to focus area</h3>
-        <input type="radio" id="trips_all" name="layer__radio-options" autocomplete="off">
-        <label for="trips_all">Total trips</label><br>
+        <input type="radio" id="to_trips_transit" name="layer__radio-options" autocomplete="off">
+        <label for="to_trips_transit">Transit trips</label><br>
 
-        <input type="radio" id="trips_transit" name="layer__radio-options" autocomplete="off">
-        <label for="trips_transit">Transit trips</label><br>
+        <input type="radio" id="to_trips_driver" name="layer__radio-options" autocomplete="off">
+        <label for="to_trips_driver">Auto trips (as driver)</label><br>
 
-        <input type="radio" id="trips_driver" name="layer__radio-options" autocomplete="off">
-        <label for="trips_driver">Auto trips (as driver)</label><br>
+        <input type="radio" id="to_trips_auto_pax" name="layer__radio-options" autocomplete="off">
+        <label for="to_trips_auto_pax">Auto trips (as passenger)</label><br>
 
-        <input type="radio" id="trips_auto_pax" name="layer__radio-options" autocomplete="off">
-        <label for="trips_pax">Auto trips (as passenger)</label><br>
+        <input type="radio" id="to_trips_bike" name="layer__radio-options" autocomplete="off">
+        <label for="to_trips_bike">Bike trips</label><br>
 
-        <input type="radio" id="trips_bike" name="layer__radio-options" autocomplete="off">
-        <label for="trips_bike">Bike trips</label><br>
+        <input type="radio" id="to_trips_walk" name="layer__radio-options" autocomplete="off">
+        <label for="to_trips_walk">Walking trips</label><br>
 
-        <input type="radio" id="trips_walk" name="layer__radio-options" autocomplete="off">
-        <label for="trips_walk">Walking trips</label><br>
+        <h3 class="layers__subtitle">Average trips from focus area</h3>
+
+        <input type="radio" id="from_trips_transit" name="layer__radio-options" autocomplete="off">
+        <label for="from_trips_transit">Transit trips</label><br>
+
+        <input type="radio" id="from_trips_driver" name="layer__radio-options" autocomplete="off">
+        <label for="from_trips_driver">Auto trips (as driver)</label><br>
+
+        <input type="radio" id="from_trips_auto_pax" name="layer__radio-options" autocomplete="off">
+        <label for="from_trips_auto_pax">Auto trips (as passenger)</label><br>
+
+        <input type="radio" id="from_trips_bike" name="layer__radio-options" autocomplete="off">
+        <label for="from_trips_bike">Bike trips</label><br>
+
+        <input type="radio" id="from_trips_walk" name="layer__radio-options" autocomplete="off">
+        <label for="from_trips_walk">Walking trips</label><br>
         
         <input type="reset" value="Reset map settings" id="reset">
       </form>

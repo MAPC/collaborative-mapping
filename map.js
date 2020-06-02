@@ -1,7 +1,7 @@
 mapboxgl.accessToken = 'pk.eyJ1IjoiaWhpbGwiLCJhIjoiY2plZzUwMTRzMW45NjJxb2R2Z2thOWF1YiJ9.szIAeMS4c9YTgNsJeG36gg';
 const map = new mapboxgl.Map({
   container: 'map',
-  style: 'mapbox://styles/ihill/cka3y91rj0v1g1inrzaetrs9e',
+  style: 'mapbox://styles/ihill/cka3y91rj0v1g1inrzaetrs9e/draft',
   center: [-71.14231, 42.35887],
   zoom: 12,
 });
@@ -30,6 +30,9 @@ map.on('load', () => {
   map.setLayoutProperty('focus-area-buffer', 'visibility', 'none');
   map.setLayoutProperty('2040-blocks', 'visibility', 'none');
   map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
+  map.setLayoutProperty('trips-from-focus', 'visibility', 'none');
+  map.setLayoutProperty('time-to-west-station', 'visibility', 'none');
+  map.setLayoutProperty('time-from-west-station', 'visibility', 'none');
   map.setLayoutProperty('openspace', 'visibility', 'none');
   map.on('click', function(e) {
     const selectedFeature = draw.getSelected();
@@ -77,7 +80,6 @@ map.on('load', () => {
       if (currentNotes) {
         document.getElementById("notes").defaultValue = currentNotes;
       }
-      
 
       popup.getElement().querySelector('#submit').addEventListener('click', () => {
         setTitle(selectedFeature.features[0].id, popup);
@@ -85,7 +87,7 @@ map.on('load', () => {
     } else {
       const clickedData = map.queryRenderedFeatures(
         [e.point.x, e.point.y],
-        { layers: ['taz', 'mbta-stops', 'West Station', 'mbta-routes', 'massbuilds', '2040-blocks', 'trips-to-focus'] },
+        { layers: ['taz', 'mbta-stops', 'West Station', 'mbta-routes', 'massbuilds', '2040-blocks', 'trips-to-focus', 'trips-from-focus'] },
       );
       if (clickedData.some(item => item.properties.layer != null)) {
         const mbtaData = clickedData.find(item => item.properties.layer != undefined).properties;
@@ -150,17 +152,29 @@ map.on('load', () => {
         `)
         .setMaxWidth('300px')
         .addTo(map);
-      } else if (clickedData.some(item => item.properties['trips_all'] != null)) {
-        const tripData = clickedData.find(item => item.properties['trips_all'] != null).properties;
+      } else if (clickedData.some(item => item.properties['from_trips_transit'] != null)) {
+        const tripData = clickedData.find(item => item.properties['from_trips_transit'] != null).properties;
         new mapboxgl.Popup()
           .setLngLat(e.lngLat)
           .setHTML(`
-            <p>Total trips: ${d3.format(',.2f')(tripData['trips_all'])}</p>
-            <p>Transit trips: ${d3.format(',.2f')(tripData['trips_transit'])}</p>
-            <p>Auto trips (driver): ${d3.format(',.2f')(tripData['trips_driver'])}</p>
-            <p>Auto trips (passenger): ${d3.format(',.2f')(tripData['trips_auto_pax'])}</p>
-            <p>Bike trips: ${d3.format(',.2f')(tripData['trips_bike'])}</p>
-            <p>Walking trips: ${d3.format(',.2f')(tripData['trips_walk'])}</p>
+            <p>Transit trips: ${d3.format(',.2f')(tripData['from_trips_transit'])}</p>
+            <p>Auto trips (driver): ${d3.format(',.2f')(tripData['from_trips_driver'])}</p>
+            <p>Auto trips (passenger): ${d3.format(',.2f')(tripData['from_trips_auto_pax'])}</p>
+            <p>Bike trips: ${d3.format(',.2f')(tripData['from_trips_bike'])}</p>
+            <p>Walking trips: ${d3.format(',.2f')(tripData['from_trips_walk'])}</p>
+          `)
+          .setMaxWidth('300px')
+          .addTo(map);
+      } else if (clickedData.some(item => item.properties['to_trips_transit'] != null)) {
+        const tripData = clickedData.find(item => item.properties['to_trips_transit'] != null).properties;
+        new mapboxgl.Popup()
+          .setLngLat(e.lngLat)
+          .setHTML(`
+            <p>Transit trips: ${d3.format(',.2f')(tripData['to_trips_transit'])}</p>
+            <p>Auto trips (driver): ${d3.format(',.2f')(tripData['to_trips_driver'])}</p>
+            <p>Auto trips (passenger): ${d3.format(',.2f')(tripData['to_trips_auto_pax'])}</p>
+            <p>Bike trips: ${d3.format(',.2f')(tripData['to_trips_bike'])}</p>
+            <p>Walking trips: ${d3.format(',.2f')(tripData['to_trips_walk'])}</p>
           `)
           .setMaxWidth('300px')
           .addTo(map);
@@ -205,7 +219,10 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       map.setLayoutProperty('focus-area-buffer', 'visibility', 'none');
       map.setLayoutProperty('2040-blocks', 'visibility', 'none');
       map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
+      map.setLayoutProperty('trips-from-focus', 'visibility', 'none');
       map.setLayoutProperty('openspace', 'visibility', 'none');
+      map.setLayoutProperty('time-to-west-station', 'visibility', 'none');
+      map.setLayoutProperty('time-from-west-station', 'visibility', 'none');
       break;
     case 'focus-area':
       toggleLayer('focus-area');
@@ -233,6 +250,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       toggleLayer('openspace')
       break;
 
+    // Demographics
     case 'population':
       choroplethLegend.style.display = "inline";
       entry1.textContent = "1 - 999";
@@ -407,29 +425,8 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       ]);
       break;
     
-    case 'trips_all':
-      choroplethLegend.style.display = "inline";
-      entry1.textContent = "0 - 1";
-      entry2.textContent = "1 - 2";
-      entry3.textContent = "2 - 4";
-      entry4.textContent = "4 - 16";
-      entry5.textContent = "16 - 224";
-      map.setLayoutProperty('2040-blocks', 'visibility', 'none');
-      map.setLayoutProperty('taz', 'visibility', 'none');
-      map.setLayoutProperty('trips-to-focus', 'visibility', 'visible');
-      map.setPaintProperty('trips-to-focus', 'fill-opacity', 1);
-      map.setPaintProperty('trips-to-focus', 'fill-color', ["step",
-        ['get', 'trips_all'],
-        zeroColor, 0,
-        colors[0], 1,
-        colors[1], 2,
-        colors[2], 4,
-        colors[3], 16,
-        colors[4]
-      ]);
-      break;
-    
-    case 'trips_transit':
+    // Trips to focus area
+    case 'to_trips_transit':
       choroplethLegend.style.display = "inline";
       entry1.textContent = "0 - .5";
       entry2.textContent = "0.5 - 1";
@@ -438,10 +435,11 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry5.textContent = "2+";
       map.setLayoutProperty('2040-blocks', 'visibility', 'none');
       map.setLayoutProperty('taz', 'visibility', 'none');
+      map.setLayoutProperty('trips-from-focus', 'visibility', 'none');
       map.setLayoutProperty('trips-to-focus', 'visibility', 'visible');
       map.setPaintProperty('trips-to-focus', 'fill-opacity', 1);
       map.setPaintProperty('trips-to-focus', 'fill-color', ["step",
-        ['get', 'trips_transit'],
+        ['get', 'to_trips_transit'],
         zeroColor, 0,
         colors[0], .5,
         colors[1], 1,
@@ -451,7 +449,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       ]);
       break;
     
-    case 'trips_auto_pax':
+    case 'to_trips_auto_pax':
       choroplethLegend.style.display = "inline";
       entry1.textContent = "0 - 2.5";
       entry2.textContent = "2.5 - 5";
@@ -460,10 +458,11 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry5.textContent = "20+";
       map.setLayoutProperty('2040-blocks', 'visibility', 'none');
       map.setLayoutProperty('taz', 'visibility', 'none');
+      map.setLayoutProperty('trips-from-focus', 'visibility', 'none');
       map.setLayoutProperty('trips-to-focus', 'visibility', 'visible');
       map.setPaintProperty('trips-to-focus', 'fill-opacity', 1);
       map.setPaintProperty('trips-to-focus', 'fill-color', ["step",
-        ['get', 'trips_auto_pax'],
+        ['get', 'to_trips_auto_pax'],
         zeroColor, 0,
         colors[0], 2.5,
         colors[1], 5,
@@ -473,7 +472,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       ]);
       break;
 
-    case 'trips_driver':
+    case 'to_trips_driver':
         choroplethLegend.style.display = "inline";
         entry1.textContent = "0 - 5";
         entry2.textContent = "5 - 10";
@@ -482,10 +481,11 @@ document.querySelector('.layers').addEventListener('click', (e) => {
         entry5.textContent = "50+";
         map.setLayoutProperty('2040-blocks', 'visibility', 'none');
         map.setLayoutProperty('taz', 'visibility', 'none');
+        map.setLayoutProperty('trips-from-focus', 'visibility', 'none');
         map.setLayoutProperty('trips-to-focus', 'visibility', 'visible');
         map.setPaintProperty('trips-to-focus', 'fill-opacity', 1);
         map.setPaintProperty('trips-to-focus', 'fill-color', ["step",
-          ['get', 'trips_driver'],
+          ['get', 'to_trips_driver'],
           zeroColor, 0,
           colors[0], 5,
           colors[1], 10,
@@ -495,7 +495,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
         ]);
         break;
 
-      case 'trips_bike':
+      case 'to_trips_bike':
         choroplethLegend.style.display = "inline";
         entry1.textContent = "0 - 2.5";
         entry2.textContent = "2.5 - 5";
@@ -504,9 +504,10 @@ document.querySelector('.layers').addEventListener('click', (e) => {
         entry5.textContent = "15+";
         map.setLayoutProperty('2040-blocks', 'visibility', 'none');
         map.setLayoutProperty('taz', 'visibility', 'none');
+        map.setLayoutProperty('trips-from-focus', 'visibility', 'none');
         map.setLayoutProperty('trips-to-focus', 'visibility', 'visible');
         map.setPaintProperty('trips-to-focus', 'fill-color', ["step",
-          ['get', 'trips_bike'],
+          ['get', 'to_trips_bike'],
           zeroColor, 0,
           colors[0], 2.5,
           colors[1], 5,
@@ -516,13 +517,13 @@ document.querySelector('.layers').addEventListener('click', (e) => {
         ]);
         map.setPaintProperty('trips-to-focus', 'fill-opacity',
           ["case",
-            ['has', 'trips_bike'],
+            ['has', 'to_trips_bike'],
               1,
             0
         ])
         break;
 
-      case 'trips_walk':
+      case 'to_trips_walk':
         choroplethLegend.style.display = "inline";
         entry1.textContent = "0 - 5";
         entry2.textContent = "5 - 20";
@@ -531,9 +532,10 @@ document.querySelector('.layers').addEventListener('click', (e) => {
         entry5.textContent = "50+";
         map.setLayoutProperty('2040-blocks', 'visibility', 'none');
         map.setLayoutProperty('taz', 'visibility', 'none');
+        map.setLayoutProperty('trips-from-focus', 'visibility', 'none');
         map.setLayoutProperty('trips-to-focus', 'visibility', 'visible');
         map.setPaintProperty('trips-to-focus', 'fill-color', ["step",
-          ['get', 'trips_walk'],
+          ['get', 'to_trips_walk'],
           zeroColor, 0,
           colors[0], 5,
           colors[1], 20,
@@ -543,32 +545,159 @@ document.querySelector('.layers').addEventListener('click', (e) => {
         ]);
         map.setPaintProperty('trips-to-focus', 'fill-opacity',
           ["case",
-            ['has', 'trips_walk'],
+            ['has', 'to_trips_walk'],
               1,
             0
         ])
         break;
 
-    case 'lrtp_hh':
-      choroplethLegend.style.display = "inline";
-      entry1.textContent = "1 - 5";
-      entry2.textContent = "6 - 25";
-      entry3.textContent = "26 - 50";
-      entry4.textContent = "51 - 100";
-      entry5.textContent = "101+";
-      map.setLayoutProperty('taz', 'visibility', 'none');
-      map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
-      map.setLayoutProperty('2040-blocks', 'visibility', 'visible');
-      map.setPaintProperty('2040-blocks', 'fill-color', ["step",
-        ['get', 'lrtp_HH40'],
-        zeroColor, 1,
-        colors[0], 6,
-        colors[1], 26,
-        colors[2], 51,
-        colors[3], 101,
-        colors[4]
-      ]);
-      break;
+      // Trips from focus area    
+      case 'from_trips_transit':
+        choroplethLegend.style.display = "inline";
+        entry1.textContent = "0 - .5";
+        entry2.textContent = "0.5 - 1";
+        entry3.textContent = "1 - 1.5";
+        entry4.textContent = "1.5 - 2";
+        entry5.textContent = "2+";
+        map.setLayoutProperty('2040-blocks', 'visibility', 'none');
+        map.setLayoutProperty('taz', 'visibility', 'none');
+        map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
+        map.setLayoutProperty('trips-from-focus', 'visibility', 'visible');
+        map.setPaintProperty('trips-from-focus', 'fill-opacity', 1);
+        map.setPaintProperty('trips-from-focus', 'fill-color', ["step",
+          ['get', 'from_trips_transit'],
+          zeroColor, 0,
+          colors[0], .5,
+          colors[1], 1,
+          colors[2], 1.5,
+          colors[3], 2,
+          colors[4]
+        ]);
+        break;
+      
+      case 'from_trips_auto_pax':
+        choroplethLegend.style.display = "inline";
+        entry1.textContent = "0 - 2.5";
+        entry2.textContent = "2.5 - 5";
+        entry3.textContent = "5 - 10";
+        entry4.textContent = "10 - 20";
+        entry5.textContent = "20+";
+        map.setLayoutProperty('2040-blocks', 'visibility', 'none');
+        map.setLayoutProperty('taz', 'visibility', 'none');
+        map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
+        map.setLayoutProperty('trips-from-focus', 'visibility', 'visible');
+        map.setPaintProperty('trips-from-focus', 'fill-opacity', 1);
+        map.setPaintProperty('trips-from-focus', 'fill-color', ["step",
+          ['get', 'from_trips_auto_pax'],
+          zeroColor, 0,
+          colors[0], 2.5,
+          colors[1], 5,
+          colors[2], 10,
+          colors[3], 20,
+          colors[4]
+        ]);
+        break;
+
+      case 'from_trips_driver':
+          choroplethLegend.style.display = "inline";
+          entry1.textContent = "0 - 5";
+          entry2.textContent = "5 - 10";
+          entry3.textContent = "10 - 25";
+          entry4.textContent = "25 - 50";
+          entry5.textContent = "50+";
+          map.setLayoutProperty('2040-blocks', 'visibility', 'none');
+          map.setLayoutProperty('taz', 'visibility', 'none');
+          map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
+        map.setLayoutProperty('trips-from-focus', 'visibility', 'visible');
+          map.setPaintProperty('trips-from-focus', 'fill-opacity', 1);
+          map.setPaintProperty('trips-from-focus', 'fill-color', ["step",
+            ['get', 'from_trips_driver'],
+            zeroColor, 0,
+            colors[0], 5,
+            colors[1], 10,
+            colors[2], 25,
+            colors[3], 50,
+            colors[4]
+          ]);
+          break;
+
+        case 'from_trips_bike':
+          choroplethLegend.style.display = "inline";
+          entry1.textContent = "0 - 2.5";
+          entry2.textContent = "2.5 - 5";
+          entry3.textContent = "5 - 10";
+          entry4.textContent = "10 - 15";
+          entry5.textContent = "15+";
+          map.setLayoutProperty('2040-blocks', 'visibility', 'none');
+          map.setLayoutProperty('taz', 'visibility', 'none');
+          map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
+          map.setLayoutProperty('trips-from-focus', 'visibility', 'visible');
+          map.setPaintProperty('trips-from-focus', 'fill-color', ["step",
+            ['get', 'from_trips_bike'],
+            zeroColor, 0,
+            colors[0], 2.5,
+            colors[1], 5,
+            colors[2], 10,
+            colors[3], 15,
+            colors[4]
+          ]);
+          map.setPaintProperty('trips-from-focus', 'fill-opacity',
+            ["case",
+              ['has', 'from_trips_bike'],
+                1,
+              0
+          ])
+          break;
+
+        case 'from_trips_walk':
+          choroplethLegend.style.display = "inline";
+          entry1.textContent = "0 - 5";
+          entry2.textContent = "5 - 20";
+          entry3.textContent = "20 - 50";
+          entry4.textContent = "50 - 100";
+          entry5.textContent = "50+";
+          map.setLayoutProperty('2040-blocks', 'visibility', 'none');
+          map.setLayoutProperty('taz', 'visibility', 'none');
+          map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
+          map.setLayoutProperty('trips-from-focus', 'visibility', 'visible');
+          map.setPaintProperty('trips-from-focus', 'fill-color', ["step",
+            ['get', 'from_trips_walk'],
+            zeroColor, 0,
+            colors[0], 5,
+            colors[1], 20,
+            colors[2], 50,
+            colors[3], 100,
+            colors[4]
+          ]);
+          map.setPaintProperty('trips-from-focus', 'fill-opacity',
+            ["case",
+              ['has', 'from_trips_walk'],
+                1,
+              0
+          ])
+          break;
+      
+      // Projections
+      case 'lrtp_hh':
+        choroplethLegend.style.display = "inline";
+        entry1.textContent = "1 - 5";
+        entry2.textContent = "6 - 25";
+        entry3.textContent = "26 - 50";
+        entry4.textContent = "51 - 100";
+        entry5.textContent = "101+";
+        map.setLayoutProperty('taz', 'visibility', 'none');
+        map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
+        map.setLayoutProperty('2040-blocks', 'visibility', 'visible');
+        map.setPaintProperty('2040-blocks', 'fill-color', ["step",
+          ['get', 'lrtp_HH40'],
+          zeroColor, 1,
+          colors[0], 6,
+          colors[1], 26,
+          colors[2], 51,
+          colors[3], 101,
+          colors[4]
+        ]);
+        break;
 
     case 'lrtp_emp':
       choroplethLegend.style.display = "inline";
