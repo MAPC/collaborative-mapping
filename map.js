@@ -49,6 +49,12 @@ map.on('load', () => {
       const popup = new mapboxgl.Popup()
         .setLngLat(coordinates)
         .setHTML(`
+          <select id="question" name="question" class="popup__question">
+            <option value="1">1. What are the important origins and destinations people will need to connect via West Station?</option>
+            <option value="2">2. What existing transit routes need improvements, and where?</option>
+            <option value="3">3. What active transportation routes are needed?</option>
+            <option value="4">4. What additional land development scenarios, zoning, parking, or other policies should we model and evaluate?</option>
+          </select> 
           <input type="text" id="title" placeholder="Title" class="popup__title">
           <textarea id="notes" rows="5" placeholder="Notes" class="popup__notes"></textarea>
           <button id="submit">Set</button>`
@@ -56,16 +62,22 @@ map.on('load', () => {
         .setMaxWidth('300px')
         .addTo(map);
 
-      
+      const currentQuestion = selectedFeature.features[0].properties.user__question;
       const currentTitle = selectedFeature.features[0].properties.user__title;
       const currentNotes = selectedFeature.features[0].properties.user__notes;
+
+      if (currentQuestion) {
+        const selectedOption = document.querySelector(`option[value="${currentQuestion}"]`);
+        selectedOption.selected = true;
+      }
       if (currentTitle) {
-        document.getElementById("title").defaultValue = currentTitle
+        document.getElementById("title").defaultValue = currentTitle;
       }
 
       if (currentNotes) {
-        document.getElementById("notes").defaultValue = currentNotes
+        document.getElementById("notes").defaultValue = currentNotes;
       }
+      
 
       popup.getElement().querySelector('#submit').addEventListener('click', () => {
         setTitle(selectedFeature.features[0].id, popup);
@@ -689,6 +701,14 @@ function saveGeojson() {
 }
 
 function setTitle(featureId, popupObj) {
+  const options = document.querySelector("#question").options
+  let selectedQuestion;
+  for (let i = 0; i < options.length; i++) {
+    if (options[i].selected) {
+      selectedQuestion = options[i].value
+    }
+  }
+  draw.setFeatureProperty(featureId, 'user__question', selectedQuestion);
   draw.setFeatureProperty(featureId, 'user__title', document.querySelector('#title').value);
   draw.setFeatureProperty(featureId, 'user__notes', document.querySelector('#notes').value);
   popupObj.remove();
