@@ -686,13 +686,15 @@ function toggleLayer(layerId) {
 
 function saveGeojson() {
   const save = document.querySelector('.control__download')
+  const timestamp = new Date();
+  const fileName = `data__${timestamp.getMonth()}-${timestamp.getDate()}-${timestamp.getFullYear()}.geojson`
   save.onclick = function(e) {
     e.preventDefault()
     var data = draw.getAll();
     if (data.features.length > 0) {
       const convertedData = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data));
       document.getElementById('export').setAttribute('href', 'data:' + convertedData);
-      document.getElementById('export').setAttribute('download','data.geojson');
+      document.getElementById('export').setAttribute('download', fileName);
       document.getElementById('export').click();
     } else {
         alert("No data drawn");
