@@ -30,6 +30,7 @@ map.on('load', () => {
   map.setLayoutProperty('focus-area-buffer', 'visibility', 'none');
   map.setLayoutProperty('2040-blocks', 'visibility', 'none');
   map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
+  map.setLayoutProperty('openspace', 'visibility', 'none');
   map.on('click', function(e) {
     const selectedFeature = draw.getSelected();
     if (selectedFeature.features.length > 0) {
@@ -72,7 +73,7 @@ map.on('load', () => {
     } else {
       const clickedData = map.queryRenderedFeatures(
         [e.point.x, e.point.y],
-        { layers: ['taz', 'mbta-stops', 'mbta-routes', 'massbuilds', '2040-blocks', 'trips-to-focus'] },
+        { layers: ['taz', 'mbta-stops', 'West Station', 'mbta-routes', 'massbuilds', '2040-blocks', 'trips-to-focus'] },
       );
       if (clickedData.some(item => item.properties.layer != null)) {
         const mbtaData = clickedData.find(item => item.properties.layer != undefined).properties;
@@ -192,6 +193,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       map.setLayoutProperty('focus-area-buffer', 'visibility', 'none');
       map.setLayoutProperty('2040-blocks', 'visibility', 'none');
       map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
+      map.setLayoutProperty('openspace', 'visibility', 'none');
       break;
     case 'focus-area':
       toggleLayer('focus-area');
@@ -213,6 +215,10 @@ document.querySelector('.layers').addEventListener('click', (e) => {
         massbuildsLegend.style.display = "inline";
       }
       toggleLayer('massbuilds');
+      break;
+      
+    case 'openspace':
+      toggleLayer('openspace')
       break;
 
     case 'population':
