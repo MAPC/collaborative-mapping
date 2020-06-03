@@ -24,17 +24,7 @@ map.addControl(draw, 'top-left');
 map.addControl(new mapboxgl.NavigationControl(), 'bottom-left');
 map.scrollZoom.disable();
 map.on('load', () => {
-  map.setLayoutProperty('taz', 'visibility', 'none');
-  map.setLayoutProperty('massbuilds', 'visibility', 'none');
-  map.setLayoutProperty('mbta-stops', 'visibility', 'none');
-  map.setLayoutProperty('mbta-routes', 'visibility', 'none');
-  map.setLayoutProperty('focus-area', 'visibility', 'none');
-  map.setLayoutProperty('focus-area-buffer', 'visibility', 'none');
-  map.setLayoutProperty('2040-blocks', 'visibility', 'none');
-  map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
-  map.setLayoutProperty('trips-from-focus', 'visibility', 'none');
-  map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
-  map.setLayoutProperty('openspace', 'visibility', 'none');
+  resetMap();
   map.on('click', function(e) {
     const selectedFeature = draw.getSelected();
     if (selectedFeature.features.length > 0 || draw.getMode() === 'draw_line_string' || draw.getMode() === 'draw_polygon') {
@@ -84,7 +74,7 @@ map.on('load', () => {
         }
 
         popup.getElement().querySelector('#submit').addEventListener('click', () => {
-          setTitle(selectedFeature.features[0].id, popup);
+          setFeatureData(selectedFeature.features[0].id, popup);
         })
       }
       
@@ -239,17 +229,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
     case 'reset':
       choroplethLegend.style.display = "none";
       massbuildsLegend.style.display = "none";
-      map.setLayoutProperty('mbta-stops', 'visibility', 'none');
-      map.setLayoutProperty('mbta-routes', 'visibility', 'none');
-      map.setLayoutProperty('massbuilds', 'visibility', 'none');
-      map.setLayoutProperty('taz', 'visibility', 'none');
-      map.setLayoutProperty('focus-area', 'visibility', 'none');
-      map.setLayoutProperty('focus-area-buffer', 'visibility', 'none');
-      map.setLayoutProperty('2040-blocks', 'visibility', 'none');
-      map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
-      map.setLayoutProperty('trips-from-focus', 'visibility', 'none');
-      map.setLayoutProperty('openspace', 'visibility', 'none');
-      map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
+      resetMap();
       break;
     case 'focus-area':
       toggleLayer('focus-area');
@@ -286,10 +266,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "2,000 - 2,999";
       entry4.textContent = "3,000 - 3,999";
       entry5.textContent = "4,000+";
-      map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
-      map.setLayoutProperty('2040-blocks', 'visibility', 'none');
-      map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
-      map.setLayoutProperty('taz', 'visibility', 'visible');
+      displayCorrectLayer('taz');
       map.setPaintProperty('taz', 'fill-color', 
         ["step",
           ['get', 'tabular_Total Population'],
@@ -311,10 +288,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "1,000 - 1,499";
       entry4.textContent = "1,500 - 1,999";
       entry5.textContent = "2,000+";
-      map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
-      map.setLayoutProperty('2040-blocks', 'visibility', 'none');
-      map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
-      map.setLayoutProperty('taz', 'visibility', 'visible');
+      displayCorrectLayer('taz');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_Total Households'],
         zeroColor, 1,
@@ -335,10 +309,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "320 - 549";
       entry4.textContent = "550 - 999";
       entry5.textContent = "1,000+";
-      map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
-      map.setLayoutProperty('2040-blocks', 'visibility', 'none');
-      map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
-      map.setLayoutProperty('taz', 'visibility', 'visible');
+      displayCorrectLayer('taz');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_Total Employment'],
         zeroColor, 1,
@@ -359,10 +330,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "70% - 79%";
       entry4.textContent = "80% - 89%";
       entry5.textContent = "90% - 100%";
-      map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
-      map.setLayoutProperty('2040-blocks', 'visibility', 'none');
-      map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
-      map.setLayoutProperty('taz', 'visibility', 'visible');
+      displayCorrectLayer('taz');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% of Households with 1+ autos'],
         zeroColor, 1,
@@ -383,10 +351,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "55% - 69%";
       entry4.textContent = "70% - 84%";
       entry5.textContent = "85% - 100%";
-      map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
-      map.setLayoutProperty('2040-blocks', 'visibility', 'none');
-      map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
-      map.setLayoutProperty('taz', 'visibility', 'visible');
+      displayCorrectLayer('taz');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% of Households with 1+ workers'],
         zeroColor, 1,
@@ -407,10 +372,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "10% - 14%";
       entry4.textContent = "15% - 24%";
       entry5.textContent = "≥ 25%";
-      map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
-      map.setLayoutProperty('2040-blocks', 'visibility', 'none');
-      map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
-      map.setLayoutProperty('taz', 'visibility', 'visible');
+      displayCorrectLayer('taz');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% Retail employment'],
         zeroColor, 1,
@@ -430,10 +392,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "60% - 69%";
       entry4.textContent = "70% - 79%";
       entry5.textContent = "80% - 100%";
-      map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
-      map.setLayoutProperty('2040-blocks', 'visibility', 'none');
-      map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
-      map.setLayoutProperty('taz', 'visibility', 'visible');
+      displayCorrectLayer('taz');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% Service employment'],
         zeroColor, 1,
@@ -453,10 +412,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "20% - 29%";
       entry4.textContent = "30% - 39%";
       entry5.textContent = "≥ 40%";
-      map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
-      map.setLayoutProperty('2040-blocks', 'visibility', 'none');
-      map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
-      map.setLayoutProperty('taz', 'visibility', 'visible');
+      displayCorrectLayer('taz');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% Basic employment'],
         zeroColor, 1,
@@ -477,11 +433,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "25-50";
       entry4.textContent = "50 - 100";
       entry5.textContent = "100+";
-      map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
-      map.setLayoutProperty('2040-blocks', 'visibility', 'none');
-      map.setLayoutProperty('taz', 'visibility', 'none');
-      map.setLayoutProperty('trips-from-focus', 'visibility', 'none');
-      map.setLayoutProperty('trips-to-focus', 'visibility', 'visible');
+      displayCorrectLayer('trips-to-focus');
       map.setPaintProperty('trips-to-focus', 'fill-opacity', 1);
       map.setPaintProperty('trips-to-focus', 'fill-color', ["case",
         ['has', 'to_trips_bike'],
@@ -515,11 +467,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "5 - 10";
       entry4.textContent = "10 - 25";
       entry5.textContent = "25+";
-      map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
-      map.setLayoutProperty('2040-blocks', 'visibility', 'none');
-      map.setLayoutProperty('taz', 'visibility', 'none');
-      map.setLayoutProperty('trips-from-focus', 'visibility', 'none');
-      map.setLayoutProperty('trips-to-focus', 'visibility', 'visible');
+      displayCorrectLayer('trips-to-focus');
       map.setPaintProperty('trips-to-focus', 'fill-opacity', 1);
       map.setPaintProperty('trips-to-focus', 'fill-color', ["step",
         ['get', 'to_trips_transit'],
@@ -540,11 +488,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "5 - 10";
       entry4.textContent = "10 - 20";
       entry5.textContent = "20+";
-      map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
-      map.setLayoutProperty('2040-blocks', 'visibility', 'none');
-      map.setLayoutProperty('taz', 'visibility', 'none');
-      map.setLayoutProperty('trips-from-focus', 'visibility', 'none');
-      map.setLayoutProperty('trips-to-focus', 'visibility', 'visible');
+      displayCorrectLayer('trips-to-focus');
       map.setPaintProperty('trips-to-focus', 'fill-opacity', 1);
       map.setPaintProperty('trips-to-focus', 'fill-color', ["step",
         ['get', 'to_trips_auto_pax'],
@@ -565,11 +509,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
         entry3.textContent = "10 - 25";
         entry4.textContent = "25 - 50";
         entry5.textContent = "50+";
-        map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
-        map.setLayoutProperty('2040-blocks', 'visibility', 'none');
-        map.setLayoutProperty('taz', 'visibility', 'none');
-        map.setLayoutProperty('trips-from-focus', 'visibility', 'none');
-        map.setLayoutProperty('trips-to-focus', 'visibility', 'visible');
+        displayCorrectLayer('trips-to-focus');
         map.setPaintProperty('trips-to-focus', 'fill-opacity', 1);
         map.setPaintProperty('trips-to-focus', 'fill-color', ["step",
           ['get', 'to_trips_driver'],
@@ -590,11 +530,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
         entry3.textContent = "5 - 10";
         entry4.textContent = "10 - 15";
         entry5.textContent = "15+";
-        map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
-        map.setLayoutProperty('2040-blocks', 'visibility', 'none');
-        map.setLayoutProperty('taz', 'visibility', 'none');
-        map.setLayoutProperty('trips-from-focus', 'visibility', 'none');
-        map.setLayoutProperty('trips-to-focus', 'visibility', 'visible');
+        displayCorrectLayer('trips-to-focus');
         map.setPaintProperty('trips-to-focus', 'fill-color', ["step",
           ['get', 'to_trips_bike'],
           zeroColor, 0,
@@ -620,11 +556,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
         entry3.textContent = "20 - 50";
         entry4.textContent = "50 - 100";
         entry5.textContent = "50+";
-        map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
-        map.setLayoutProperty('2040-blocks', 'visibility', 'none');
-        map.setLayoutProperty('taz', 'visibility', 'none');
-        map.setLayoutProperty('trips-from-focus', 'visibility', 'none');
-        map.setLayoutProperty('trips-to-focus', 'visibility', 'visible');
+        displayCorrectLayer('trips-to-focus');
         map.setPaintProperty('trips-to-focus', 'fill-color', ["step",
           ['get', 'to_trips_walk'],
           zeroColor, 0,
@@ -651,11 +583,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "25-50";
       entry4.textContent = "50 - 100";
       entry5.textContent = "100+";
-      map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
-      map.setLayoutProperty('2040-blocks', 'visibility', 'none');
-      map.setLayoutProperty('taz', 'visibility', 'none');
-      map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
-      map.setLayoutProperty('trips-from-focus', 'visibility', 'visible');
+      displayCorrectLayer('trips-from-focus');
       map.setPaintProperty('trips-from-focus', 'fill-opacity', 1);
       map.setPaintProperty('trips-from-focus', 'fill-color', ["case",
         ['has', 'from_trips_bike'],
@@ -689,11 +617,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
         entry3.textContent = "5 - 10";
         entry4.textContent = "10 - 25";
         entry5.textContent = "25+";
-        map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
-        map.setLayoutProperty('2040-blocks', 'visibility', 'none');
-        map.setLayoutProperty('taz', 'visibility', 'none');
-        map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
-        map.setLayoutProperty('trips-from-focus', 'visibility', 'visible');
+        displayCorrectLayer('trips-from-focus');
         map.setPaintProperty('trips-from-focus', 'fill-opacity', 1);
         map.setPaintProperty('trips-from-focus', 'fill-color', ["step",
           ['get', 'from_trips_transit'],
@@ -714,11 +638,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
         entry3.textContent = "5 - 10";
         entry4.textContent = "10 - 20";
         entry5.textContent = "20+";
-        map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
-        map.setLayoutProperty('2040-blocks', 'visibility', 'none');
-        map.setLayoutProperty('taz', 'visibility', 'none');
-        map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
-        map.setLayoutProperty('trips-from-focus', 'visibility', 'visible');
+        displayCorrectLayer('trips-from-focus');
         map.setPaintProperty('trips-from-focus', 'fill-opacity', 1);
         map.setPaintProperty('trips-from-focus', 'fill-color', ["step",
           ['get', 'from_trips_auto_pax'],
@@ -739,11 +659,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
           entry3.textContent = "10 - 25";
           entry4.textContent = "25 - 50";
           entry5.textContent = "50+";
-          map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
-          map.setLayoutProperty('2040-blocks', 'visibility', 'none');
-          map.setLayoutProperty('taz', 'visibility', 'none');
-          map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
-        map.setLayoutProperty('trips-from-focus', 'visibility', 'visible');
+          displayCorrectLayer('trips-from-focus');
           map.setPaintProperty('trips-from-focus', 'fill-opacity', 1);
           map.setPaintProperty('trips-from-focus', 'fill-color', ["step",
             ['get', 'from_trips_driver'],
@@ -764,11 +680,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
           entry3.textContent = "5 - 10";
           entry4.textContent = "10 - 15";
           entry5.textContent = "15+";
-          map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
-          map.setLayoutProperty('2040-blocks', 'visibility', 'none');
-          map.setLayoutProperty('taz', 'visibility', 'none');
-          map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
-          map.setLayoutProperty('trips-from-focus', 'visibility', 'visible');
+          displayCorrectLayer('trips-from-focus');
           map.setPaintProperty('trips-from-focus', 'fill-color', ["step",
             ['get', 'from_trips_bike'],
             zeroColor, 0,
@@ -794,11 +706,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
           entry3.textContent = "20 - 50";
           entry4.textContent = "50 - 100";
           entry5.textContent = "50+";
-          map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
-          map.setLayoutProperty('2040-blocks', 'visibility', 'none');
-          map.setLayoutProperty('taz', 'visibility', 'none');
-          map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
-          map.setLayoutProperty('trips-from-focus', 'visibility', 'visible');
+          displayCorrectLayer('trips-from-focus');
           map.setPaintProperty('trips-from-focus', 'fill-color', ["step",
             ['get', 'from_trips_walk'],
             zeroColor, 0,
@@ -825,10 +733,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
         entry3.textContent = "30 - 45 minutes";
         entry4.textContent = "45 - 60 minutes";
         entry5.textContent = "60+ minutes";
-        map.setLayoutProperty('taz', 'visibility', 'none');
-        map.setLayoutProperty('2040-blocks', 'visibility', 'none');
-        map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
-        map.setLayoutProperty('ws-isochrone', 'visibility', 'visible');
+        displayCorrectLayer('ws-isochrone');
         map.setPaintProperty('ws-isochrone', 'fill-color', ["step",
           ['get', 'timeFR_245'],
           colors[0], 16,
@@ -848,10 +753,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
         entry3.textContent = "30 - 45 minutes";
         entry4.textContent = "45 - 60 minutes";
         entry5.textContent = "60+ minutes";
-        map.setLayoutProperty('taz', 'visibility', 'none');
-        map.setLayoutProperty('2040-blocks', 'visibility', 'none');
-        map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
-        map.setLayoutProperty('ws-isochrone', 'visibility', 'visible');
+        displayCorrectLayer('ws-isochrone');
         map.setPaintProperty('ws-isochrone', 'fill-color', ["step",
           ['get', 'timeTO_245'],
           colors[0], 16,
@@ -872,10 +774,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
         entry3.textContent = "26 - 50";
         entry4.textContent = "51 - 100";
         entry5.textContent = "101+";
-        map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
-        map.setLayoutProperty('taz', 'visibility', 'none');
-        map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
-        map.setLayoutProperty('2040-blocks', 'visibility', 'visible');
+        displayCorrectLayer('2040-blocks');
         map.setPaintProperty('2040-blocks', 'fill-color', ["step",
           ['get', 'lrtp_HH40'],
           zeroColor, 1,
@@ -895,10 +794,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "21 - 50";
       entry4.textContent = "51 - 100";
       entry5.textContent = "101+";
-      map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
-      map.setLayoutProperty('taz', 'visibility', 'none');
-      map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
-      map.setLayoutProperty('2040-blocks', 'visibility', 'visible');
+      displayCorrectLayer('2040-blocks');
       map.setPaintProperty('2040-blocks', 'fill-color', ["step",
         ['get', 'lrtp_EMP40'],
         zeroColor, 1,
@@ -917,10 +813,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "26 - 50";
       entry4.textContent = "51 - 100";
       entry5.textContent = "101+";
-      map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
-      map.setLayoutProperty('taz', 'visibility', 'none');
-      map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
-      map.setLayoutProperty('2040-blocks', 'visibility', 'visible');
+      displayCorrectLayer('2040-blocks');
       map.setPaintProperty('2040-blocks', 'fill-color', ["step",
         ['get', 'feir_HH40'],
         zeroColor, 1,
@@ -939,10 +832,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "21 - 50";
       entry4.textContent = "51 - 100";
       entry5.textContent = "101+";
-      map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
-      map.setLayoutProperty('taz', 'visibility', 'none');
-      map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
-      map.setLayoutProperty('2040-blocks', 'visibility', 'visible');
+      displayCorrectLayer('2040-blocks');
       map.setPaintProperty('2040-blocks', 'fill-color', ["step",
         ['get', 'feir_EMP40'],
         zeroColor, 1,
@@ -961,10 +851,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "26 - 50";
       entry4.textContent = "51 - 100";
       entry5.textContent = "101+";
-      map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
-      map.setLayoutProperty('taz', 'visibility', 'none');
-      map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
-      map.setLayoutProperty('2040-blocks', 'visibility', 'visible');
+      displayCorrectLayer('2040-blocks');
       map.setPaintProperty('2040-blocks', 'fill-color', ["step",
         ['get', 'fmax_HH40'],
         zeroColor, 1,
@@ -983,10 +870,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "26 - 50";
       entry4.textContent = "51 - 100";
       entry5.textContent = "101+";
-      map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
-      map.setLayoutProperty('taz', 'visibility', 'none');
-      map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
-      map.setLayoutProperty('2040-blocks', 'visibility', 'visible');
+      displayCorrectLayer('2040-blocks');
       map.setPaintProperty('2040-blocks', 'fill-color', ["step",
         ['get', 'fmax_EMP40'],
         zeroColor, 1,
@@ -1011,6 +895,31 @@ function toggleLayer(layerId) {
   }
 }
 
+function resetMap() {
+  map.setLayoutProperty('taz', 'visibility', 'none');
+  map.setLayoutProperty('massbuilds', 'visibility', 'none');
+  map.setLayoutProperty('mbta-stops', 'visibility', 'none');
+  map.setLayoutProperty('mbta-routes', 'visibility', 'none');
+  map.setLayoutProperty('focus-area', 'visibility', 'none');
+  map.setLayoutProperty('focus-area-buffer', 'visibility', 'none');
+  map.setLayoutProperty('2040-blocks', 'visibility', 'none');
+  map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
+  map.setLayoutProperty('trips-from-focus', 'visibility', 'none');
+  map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
+  map.setLayoutProperty('openspace', 'visibility', 'none');
+}
+
+function displayCorrectLayer(selectedLayer) {
+  const layers = ['ws-isochrone', 'taz', 'trips-to-focus', 'trips-from-focus', '2040-blocks'];
+  layers.forEach((layer) => {
+    if (layer === selectedLayer) {
+      map.setLayoutProperty(layer, 'visibility', 'visible');
+    } else {
+      map.setLayoutProperty(layer, 'visibility', 'none');
+    }
+  })
+}
+
 function saveGeojson() {
   const save = document.querySelector('.control__download')
   const timestamp = new Date();
@@ -1029,7 +938,7 @@ function saveGeojson() {
   }
 }
 
-function setTitle(featureId, popupObj) {
+function setFeatureData(featureId, popupObj) {
   const options = document.querySelector("#question").options
   let selectedQuestion;
   for (let i = 0; i < options.length; i++) {
