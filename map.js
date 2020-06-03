@@ -21,6 +21,8 @@ const draw = new MapboxDraw({
 });
 
 map.addControl(draw, 'top-left');
+map.addControl(new mapboxgl.NavigationControl(), 'bottom-left');
+map.scrollZoom.disable();
 map.on('load', () => {
   map.setLayoutProperty('taz', 'visibility', 'none');
   map.setLayoutProperty('massbuilds', 'visibility', 'none');
@@ -35,9 +37,10 @@ map.on('load', () => {
   map.setLayoutProperty('openspace', 'visibility', 'none');
   map.on('click', function(e) {
     const selectedFeature = draw.getSelected();
-    if (selectedFeature.features.length > 0) {
+    if (selectedFeature.features.length > 0 || draw.getMode() === 'draw_line_string' || draw.getMode() === 'draw_polygon') {
       let coordinates;
-      switch(selectedFeature.features[0].geometry.type) {
+      if (selectedFeature.features[0]) {
+        switch(selectedFeature.features[0].geometry.type) {
         case 'Point':
           coordinates = selectedFeature.features[0].geometry.coordinates;
           break;
@@ -47,42 +50,46 @@ map.on('load', () => {
         case 'Polygon':
           coordinates = selectedFeature.features[0].geometry.coordinates[0][selectedFeature.features[0].geometry.coordinates.length - 1];
           break;
-      }
-      const popup = new mapboxgl.Popup()
-        .setLngLat(coordinates)
-        .setHTML(`
-          <select id="question" name="question" class="popup__question">
-            <option value="1">1. What are the important origins and destinations people will need to connect via West Station?</option>
-            <option value="2">2. What existing transit routes need improvements, and where?</option>
-            <option value="3">3. What active transportation routes are needed?</option>
-            <option value="4">4. What additional land development scenarios, zoning, parking, or other policies should we model and evaluate?</option>
-          </select> 
-          <input type="text" id="title" placeholder="Title" class="popup__title">
-          <textarea id="notes" rows="5" placeholder="Notes" class="popup__notes"></textarea>
-          <button id="submit">Set</button>`
-        )
-        .setMaxWidth('300px')
-        .addTo(map);
+        }
+        const popup = new mapboxgl.Popup()
+          .setHTML(`
+            <select id="question" name="question" class="popup__question">
+              <option value="1">1. What are the important origins and destinations people will need to connect via West Station?</option>
+              <option value="2">2. What existing transit routes need improvements, and where?</option>
+              <option value="3">3. What active transportation routes are needed?</option>
+              <option value="4">4. What additional land development scenarios, zoning, parking, or other policies should we model and evaluate?</option>
+            </select> 
+            <input type="text" id="title" placeholder="Title" class="popup__title">
+            <textarea id="notes" rows="5" placeholder="Notes" class="popup__notes"></textarea>
+            <button id="submit">Set</button>`
+          )
+          .setMaxWidth('300px')
+          .setLngLat(coordinates)
+          .addTo(map)
+        
+        const currentQuestion = selectedFeature.features[0].properties.user__question;
+        const currentTitle = selectedFeature.features[0].properties.user__title;
+        const currentNotes = selectedFeature.features[0].properties.user__notes;
 
-      const currentQuestion = selectedFeature.features[0].properties.user__question;
-      const currentTitle = selectedFeature.features[0].properties.user__title;
-      const currentNotes = selectedFeature.features[0].properties.user__notes;
+        if (currentQuestion) {
+          const selectedOption = document.querySelector(`option[value="${currentQuestion}"]`);
+          selectedOption.selected = true;
+        }
+        if (currentTitle) {
+          document.getElementById("title").defaultValue = currentTitle;
+        }
 
-      if (currentQuestion) {
-        const selectedOption = document.querySelector(`option[value="${currentQuestion}"]`);
-        selectedOption.selected = true;
-      }
-      if (currentTitle) {
-        document.getElementById("title").defaultValue = currentTitle;
-      }
+        if (currentNotes) {
+          document.getElementById("notes").defaultValue = currentNotes;
+        }
 
-      if (currentNotes) {
-        document.getElementById("notes").defaultValue = currentNotes;
+        popup.getElement().querySelector('#submit').addEventListener('click', () => {
+          setTitle(selectedFeature.features[0].id, popup);
+        })
       }
+      
 
-      popup.getElement().querySelector('#submit').addEventListener('click', () => {
-        setTitle(selectedFeature.features[0].id, popup);
-      })
+
     } else {
       const clickedData = map.queryRenderedFeatures(
         [e.point.x, e.point.y],
@@ -198,7 +205,7 @@ map.on('load', () => {
         `)
         .setMaxWidth('300px')
         .addTo(map);
-      } else {
+      } else if (clickedData.some(item => item.properties['tabular_Total Population'] != null)) {
         const tazData = clickedData.find(item => item.properties['tabular_Total Population'] != null).properties;
         new mapboxgl.Popup()
         .setLngLat(e.lngLat)
@@ -811,7 +818,6 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       
       // Isochrones
       case 'from_west_station':
-        console.log("from west station")
         choroplethLegend.style.display = "inline";
         entry0.textContent = "NA";
         entry1.textContent = "≤ 15 minutes";
