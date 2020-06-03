@@ -83,7 +83,7 @@ map.on('load', () => {
     } else {
       const clickedData = map.queryRenderedFeatures(
         [e.point.x, e.point.y],
-        { layers: ['taz', 'mbta-stops', 'West Station', 'mbta-routes', 'massbuilds', '2040-blocks', 'trips-to-focus', 'trips-from-focus', 'ws-isochrone'] },
+        { layers: ['taz', 'mbta-stops', 'West Station', 'mbta-routes', 'massbuilds', '2040-blocks', 'trips-to-focus'] },
       );
       if (clickedData.some(item => item.properties.layer != null)) {
         const mbtaData = clickedData.find(item => item.properties.layer != undefined).properties;
@@ -904,13 +904,13 @@ function resetMap() {
   map.setLayoutProperty('focus-area-buffer', 'visibility', 'none');
   map.setLayoutProperty('2040-blocks', 'visibility', 'none');
   map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
-  map.setLayoutProperty('trips-from-focus', 'visibility', 'none');
-  map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
+  // map.setLayoutProperty('trips-from-focus', 'visibility', 'none');
+  // map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
   map.setLayoutProperty('openspace', 'visibility', 'none');
 }
 
 function displayCorrectLayer(selectedLayer) {
-  const layers = ['ws-isochrone', 'taz', 'trips-to-focus', 'trips-from-focus', '2040-blocks'];
+  const layers = ['taz', 'trips-to-focus', '2040-blocks'];
   layers.forEach((layer) => {
     if (layer === selectedLayer) {
       map.setLayoutProperty(layer, 'visibility', 'visible');
