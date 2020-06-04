@@ -84,7 +84,7 @@ map.on('load', () => {
     } else {
       const clickedData = map.queryRenderedFeatures(
         [e.point.x, e.point.y],
-        { layers: ['mbta-stops', 'West Station', 'massbuilds', 'taz', 'trips-to-focus', 'trips-from-focus'] },
+        { layers: ['mbta-stops', 'West Station', 'massbuilds', 'taz', 'trips-to-focus', 'trips-from-focus', 'ws-isochrone'] },
       );
   
       if (clickedData[0].layer.id === 'mbta-stops' || clickedData[0].layer.id === 'West Station') {
@@ -193,8 +193,8 @@ map.on('load', () => {
         .setLngLat(e.lngLat)
         .setHTML(`
           <p>TAZ ${clickedData[0].properties.ID}</p>
-          <p>Time to West Station: ${d3.format('.2f')(clickedData[0].properties['timeTO_245'])} minutes</p>
           <p>Time from West Station: ${d3.format('.2f')(clickedData[0].properties['timeFR_245'])} minutes</p>
+          <p>Time to West Station: ${d3.format('.2f')(clickedData[0].properties['timeTO_245'])} minutes</p>
         `)
         .setMaxWidth('300px')
         .addTo(map);
@@ -219,16 +219,16 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       resetMap();
       break;
     case 'focus-area':
-      toggleLayer('focus-area');
-      toggleLayer('focus-area-buffer');
+      toggleFeatureLayer('focus-area');
+      toggleFeatureLayer('focus-area-buffer');
       break;
 
     case 'mbta-lines':
-      toggleLayer('mbta-routes');
+      toggleFeatureLayer('mbta-routes');
       break;
 
     case 'mbta-stops':
-      toggleLayer('mbta-stops')
+      toggleFeatureLayer('mbta-stops')
       break;
     
     case 'massbuilds':
@@ -237,11 +237,11 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       } else {
         massbuildsLegend.style.display = "inline";
       }
-      toggleLayer('massbuilds');
+      toggleFeatureLayer('massbuilds');
       break;
       
     case 'openspace':
-      toggleLayer('openspace')
+      toggleFeatureLayer('openspace')
       break;
 
     // Demographics
@@ -253,7 +253,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "2,000 - 2,999";
       entry4.textContent = "3,000 - 3,999";
       entry5.textContent = "4,000+";
-      displayCorrectLayer('taz');
+      toggleChoroplethLayer('taz');
       map.setPaintProperty('taz', 'fill-color', 
         ["step",
           ['get', 'tabular_Total Population'],
@@ -275,7 +275,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "1,000 - 1,499";
       entry4.textContent = "1,500 - 1,999";
       entry5.textContent = "2,000+";
-      displayCorrectLayer('taz');
+      toggleChoroplethLayer('taz');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_Total Households'],
         zeroColor, 1,
@@ -296,7 +296,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "320 - 549";
       entry4.textContent = "550 - 999";
       entry5.textContent = "1,000+";
-      displayCorrectLayer('taz');
+      toggleChoroplethLayer('taz');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_Total Employment'],
         zeroColor, 1,
@@ -317,7 +317,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "70% - 79%";
       entry4.textContent = "80% - 89%";
       entry5.textContent = "90% - 100%";
-      displayCorrectLayer('taz');
+      toggleChoroplethLayer('taz');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% of Households with 1+ autos'],
         zeroColor, 1,
@@ -338,7 +338,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "55% - 69%";
       entry4.textContent = "70% - 84%";
       entry5.textContent = "85% - 100%";
-      displayCorrectLayer('taz');
+      toggleChoroplethLayer('taz');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% of Households with 1+ workers'],
         zeroColor, 1,
@@ -359,7 +359,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "10% - 14%";
       entry4.textContent = "15% - 24%";
       entry5.textContent = "≥ 25%";
-      displayCorrectLayer('taz');
+      toggleChoroplethLayer('taz');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% Retail employment'],
         zeroColor, 1,
@@ -379,7 +379,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "60% - 69%";
       entry4.textContent = "70% - 79%";
       entry5.textContent = "80% - 100%";
-      displayCorrectLayer('taz');
+      toggleChoroplethLayer('taz');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% Service employment'],
         zeroColor, 1,
@@ -399,7 +399,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "20% - 29%";
       entry4.textContent = "30% - 39%";
       entry5.textContent = "≥ 40%";
-      displayCorrectLayer('taz');
+      toggleChoroplethLayer('taz');
       map.setPaintProperty('taz', 'fill-color', ["step",
         ['get', 'tabular_% Basic employment'],
         zeroColor, 1,
@@ -420,7 +420,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "25-50";
       entry4.textContent = "50 - 100";
       entry5.textContent = "100+";
-      displayCorrectLayer('trips-to-focus');
+      toggleChoroplethLayer('trips-to-focus');
       map.setPaintProperty('trips-to-focus', 'fill-opacity', 1);
       map.setPaintProperty('trips-to-focus', 'fill-color', ["case",
         ['has', 'to_trips_bike'],
@@ -454,7 +454,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "5 - 10";
       entry4.textContent = "10 - 25";
       entry5.textContent = "25+";
-      displayCorrectLayer('trips-to-focus');
+      toggleChoroplethLayer('trips-to-focus');
       map.setPaintProperty('trips-to-focus', 'fill-opacity', 1);
       map.setPaintProperty('trips-to-focus', 'fill-color', ["step",
         ['get', 'to_trips_transit'],
@@ -475,7 +475,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "5 - 10";
       entry4.textContent = "10 - 20";
       entry5.textContent = "20+";
-      displayCorrectLayer('trips-to-focus');
+      toggleChoroplethLayer('trips-to-focus');
       map.setPaintProperty('trips-to-focus', 'fill-opacity', 1);
       map.setPaintProperty('trips-to-focus', 'fill-color', ["step",
         ['get', 'to_trips_auto_pax'],
@@ -496,7 +496,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
         entry3.textContent = "10 - 25";
         entry4.textContent = "25 - 50";
         entry5.textContent = "50+";
-        displayCorrectLayer('trips-to-focus');
+        toggleChoroplethLayer('trips-to-focus');
         map.setPaintProperty('trips-to-focus', 'fill-opacity', 1);
         map.setPaintProperty('trips-to-focus', 'fill-color', ["step",
           ['get', 'to_trips_driver'],
@@ -517,7 +517,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
         entry3.textContent = "5 - 10";
         entry4.textContent = "10 - 15";
         entry5.textContent = "15+";
-        displayCorrectLayer('trips-to-focus');
+        toggleChoroplethLayer('trips-to-focus');
         map.setPaintProperty('trips-to-focus', 'fill-color', ["step",
           ['get', 'to_trips_bike'],
           zeroColor, 0,
@@ -543,7 +543,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
         entry3.textContent = "20 - 50";
         entry4.textContent = "50 - 100";
         entry5.textContent = "50+";
-        displayCorrectLayer('trips-to-focus');
+        toggleChoroplethLayer('trips-to-focus');
         map.setPaintProperty('trips-to-focus', 'fill-color', ["step",
           ['get', 'to_trips_walk'],
           zeroColor, 0,
@@ -570,7 +570,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "25-50";
       entry4.textContent = "50 - 100";
       entry5.textContent = "100+";
-      displayCorrectLayer('trips-from-focus');
+      toggleChoroplethLayer('trips-from-focus');
       map.setPaintProperty('trips-from-focus', 'fill-opacity', 1);
       map.setPaintProperty('trips-from-focus', 'fill-color', ["case",
         ['has', 'from_trips_bike'],
@@ -604,7 +604,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
         entry3.textContent = "5 - 10";
         entry4.textContent = "10 - 25";
         entry5.textContent = "25+";
-        displayCorrectLayer('trips-from-focus');
+        toggleChoroplethLayer('trips-from-focus');
         map.setPaintProperty('trips-from-focus', 'fill-opacity', 1);
         map.setPaintProperty('trips-from-focus', 'fill-color', ["step",
           ['get', 'from_trips_transit'],
@@ -625,7 +625,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
         entry3.textContent = "5 - 10";
         entry4.textContent = "10 - 20";
         entry5.textContent = "20+";
-        displayCorrectLayer('trips-from-focus');
+        toggleChoroplethLayer('trips-from-focus');
         map.setPaintProperty('trips-from-focus', 'fill-opacity', 1);
         map.setPaintProperty('trips-from-focus', 'fill-color', ["step",
           ['get', 'from_trips_auto_pax'],
@@ -646,7 +646,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
           entry3.textContent = "10 - 25";
           entry4.textContent = "25 - 50";
           entry5.textContent = "50+";
-          displayCorrectLayer('trips-from-focus');
+          toggleChoroplethLayer('trips-from-focus');
           map.setPaintProperty('trips-from-focus', 'fill-opacity', 1);
           map.setPaintProperty('trips-from-focus', 'fill-color', ["step",
             ['get', 'from_trips_driver'],
@@ -667,7 +667,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
           entry3.textContent = "5 - 10";
           entry4.textContent = "10 - 15";
           entry5.textContent = "15+";
-          displayCorrectLayer('trips-from-focus');
+          toggleChoroplethLayer('trips-from-focus');
           map.setPaintProperty('trips-from-focus', 'fill-color', ["step",
             ['get', 'from_trips_bike'],
             zeroColor, 0,
@@ -693,7 +693,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
           entry3.textContent = "20 - 50";
           entry4.textContent = "50 - 100";
           entry5.textContent = "50+";
-          displayCorrectLayer('trips-from-focus');
+          toggleChoroplethLayer('trips-from-focus');
           map.setPaintProperty('trips-from-focus', 'fill-color', ["step",
             ['get', 'from_trips_walk'],
             zeroColor, 0,
@@ -713,6 +713,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       
       // Isochrones
       case 'from_west_station':
+        console.log('from')
         choroplethLegend.style.display = "inline";
         entry0.textContent = "NA";
         entry1.textContent = "≤ 15 minutes";
@@ -720,7 +721,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
         entry3.textContent = "30 - 45 minutes";
         entry4.textContent = "45 - 60 minutes";
         entry5.textContent = "60+ minutes";
-        displayCorrectLayer('ws-isochrone');
+        toggleChoroplethLayer('ws-isochrone');
         map.setPaintProperty('ws-isochrone', 'fill-color', ["step",
           ['get', 'timeFR_245'],
           colors[0], 16,
@@ -740,7 +741,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
         entry3.textContent = "30 - 45 minutes";
         entry4.textContent = "45 - 60 minutes";
         entry5.textContent = "60+ minutes";
-        displayCorrectLayer('ws-isochrone');
+        toggleChoroplethLayer('ws-isochrone');
         map.setPaintProperty('ws-isochrone', 'fill-color', ["step",
           ['get', 'timeTO_245'],
           colors[0], 16,
@@ -756,7 +757,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
 
 saveGeojson();
 
-function toggleLayer(layerId) {
+function toggleFeatureLayer(layerId) {
   const visibility = map.getLayoutProperty(layerId, 'visibility');
   if (visibility === 'visible' || visibility === undefined) {
     map.setLayoutProperty(layerId, 'visibility', 'none');
@@ -775,11 +776,11 @@ function resetMap() {
   map.setLayoutProperty('taz', 'visibility', 'none');
   map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
   map.setLayoutProperty('trips-from-focus', 'visibility', 'none');
-  // map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
+  map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
 }
 
-function displayCorrectLayer(selectedLayer) {
-  const layers = ['taz', 'trips-to-focus', 'trips-from-focus'];
+function toggleChoroplethLayer(selectedLayer) {
+  const layers = ['taz', 'trips-to-focus', 'trips-from-focus', 'ws-isochrone'];
   layers.forEach((layer) => {
     if (layer === selectedLayer) {
       map.setLayoutProperty(layer, 'visibility', 'visible');
