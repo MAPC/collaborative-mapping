@@ -53,6 +53,13 @@ p {
   width: 254px;
 }
 
+.popup__list {
+  font-family: 'Open Sans';
+  font-size: 14px;
+  margin: 0;
+  padding: 10px;
+}
+
 .mapboxgl-popup-content {
   padding: 20px;
 }

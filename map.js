@@ -71,7 +71,7 @@ map.on('load', () => {
     } else {
       const clickedData = map.queryRenderedFeatures(
         [e.point.x, e.point.y],
-        { layers: ['mbta-stops', 'West Station', 'massbuilds', 'taz', 'trips-to-focus', 'trips-from-focus', 'ws-isochrone'] },
+        { layers: ['mbta-stops', 'West Station', 'massbuilds', 'environmental-justice', 'taz', 'trips-to-focus', 'trips-from-focus', 'ws-isochrone'] },
       );
   
       if (clickedData[0] && (clickedData[0].layer.id === 'mbta-stops' || clickedData[0].layer.id === 'West Station')) {
@@ -118,6 +118,26 @@ map.on('load', () => {
             <p>${clickedData[0].properties.NAME}</p>
             <p>Status: ${clickedData[0].properties.STATUS}</p>
             <p>Est. completion year: ${clickedData[0].properties.YEAR_COMPL}</p>
+          `)
+          .setMaxWidth('300px')
+          .addTo(map);
+      } else if (clickedData[0] && clickedData[0].layer.id === 'environmental-justice') {
+        let criteriaList = '';
+        if (clickedData[0].properties.ENGLISH) {
+          criteriaList = `<li>English isolation: 25%+ of households have no one over the age of 14 who speaks English only or very well</li>`
+        }
+        if (clickedData[0].properties.INCOME) {
+          criteriaList += `<li>Annual median household income is ≤65% of statewide median</li>`
+        }
+        if (clickedData[0].properties.MINORITY) {
+          criteriaList += `<li>25%+ of residents identify as a race other than white</li>`
+        }
+        new mapboxgl.Popup()
+          .setLngLat(e.lngLat)
+          .setHTML(`
+            <ul class='popup__list'>
+              ${criteriaList}
+            </ul>
           `)
           .setMaxWidth('300px')
           .addTo(map);
@@ -225,11 +245,15 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       }
       toggleFeatureLayer('massbuilds');
       break;
-      
+    
     case 'openspace':
       toggleFeatureLayer('openspace')
       break;
 
+    case 'envjustice':
+      toggleFeatureLayer('environmental-justice');
+      break;
+    
     // Demographics
     case 'population':
       choroplethLegend.style.display = "inline";
@@ -762,6 +786,7 @@ function resetMap() {
   map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
   map.setLayoutProperty('trips-from-focus', 'visibility', 'none');
   map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
+  map.setLayoutProperty('environmental-justice', 'visibility', 'none');
 }
 
 function toggleChoroplethLayer(selectedLayer) {
