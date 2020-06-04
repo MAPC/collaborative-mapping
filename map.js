@@ -84,10 +84,10 @@ map.on('load', () => {
     } else {
       const clickedData = map.queryRenderedFeatures(
         [e.point.x, e.point.y],
-        { layers: ['taz', 'mbta-stops', 'West Station', 'mbta-routes', 'massbuilds', 'trips-to-focus', 'trips-from-focus'] },
+        { layers: ['mbta-stops', 'West Station', 'massbuilds', 'taz', 'trips-to-focus', 'trips-from-focus'] },
       );
-      console.log(clickedData)
-      if (clickedData.some(item => item.properties.layer != null)) {
+  
+      if (clickedData[0].layer.id === 'mbta-stops' || clickedData[0].layer.id === 'West Station') {
         const mbtaData = clickedData.find(item => item.properties.layer != undefined).properties;
           if (mbtaData.layer === 'Commuter-rail_stops') {
             new mapboxgl.Popup()
@@ -104,7 +104,7 @@ map.on('load', () => {
               .setLngLat(e.lngLat)
               .setHTML(`
                 <p>${mbtaData.LINE} ${mbtaData.ROUTE}</p>
-                <p>${mbtaData.STATION}}</p>
+                <p>${mbtaData.STATION}</p>
               `)
               .setMaxWidth('300px')
               .addTo(map);
@@ -125,92 +125,76 @@ map.on('load', () => {
               .setMaxWidth('300px')
               .addTo(map);
           }
-      } else if (clickedData.some(item => item.properties.STATUS != null)) {
-        const massbuildsData = clickedData.find(item => item.properties.STATUS != null).properties;
+      } else if (clickedData[0].layer.id === 'massbuilds') {
         new mapboxgl.Popup()
           .setLngLat(e.lngLat)
           .setHTML(`
-            <p>${massbuildsData.NAME}</p>
-            <p>Status: ${massbuildsData.STATUS}</p>
-            <p>Est. completion year: ${massbuildsData.YEAR_COMPL}</p>
+            <p>${clickedData[0].properties.NAME}</p>
+            <p>Status: ${clickedData[0].properties.STATUS}</p>
+            <p>Est. completion year: ${clickedData[0].properties.YEAR_COMPL}</p>
           `)
           .setMaxWidth('300px')
           .addTo(map);
-      } else if (clickedData.some(item => item.properties['from_trips_transit'] != null)) {
-        const tripData = clickedData.find(item => item.properties['from_trips_transit'] != null).properties;
-        let totalTrips = tripData['from_trips_transit'] + tripData['from_trips_auto_pax'] + tripData['from_trips_driver']
-        if (tripData['from_trips_bike']) {
-          totalTrips += tripData['from_trips_bike'] + tripData['from_trips_walk']
-        }
+      } else if (clickedData[0].layer.id === 'taz') {
+        new mapboxgl.Popup()
+        .setLngLat(e.lngLat)
+        .setHTML(`
+          <p>Total population: ${d3.format(',')(clickedData[0].properties['tabular_Total Population'])}</p>
+          <p>Total households: ${d3.format(',')(clickedData[0].properties['tabular_Total Households'])}</p>
+          <p>Total employment: ${d3.format(',')(clickedData[0].properties['tabular_Total Employment'])}</p>
+          <p>Households with 1+ cars: ${clickedData[0].properties['tabular_% of Households with 1+ autos']}%</p>
+          <p>Households with 1+ workers: ${clickedData[0].properties['tabular_% of Households with 1+ workers']}%</p>
+          <p>Retail employment: ${clickedData[0].properties['tabular_% Retail employment']}%</p>
+          <p>Service employment: ${clickedData[0].properties['tabular_% Service employment']}%</p>
+          <p>Basic employment: ${clickedData[0].properties['tabular_% Basic employment']}%</p>
+        `)
+        .setMaxWidth('300px')
+        .addTo(map);
+      } else if (clickedData[0].layer.id === 'trips-to-focus') {
+        let totalTrips = clickedData[0].properties['to_trips_transit']
+        + clickedData[0].properties['to_trips_auto_pax']
+        + clickedData[0].properties['to_trips_driver']
+        + (isNaN(clickedData[0].properties['to_trips_bike']) ? 0 : clickedData[0].properties['to_trips_bike'])
+        + (isNaN(clickedData[0].properties['to_trips_walk']) ? 0 : clickedData[0].properties['to_trips_walk'])
+
+      new mapboxgl.Popup()
+        .setLngLat(e.lngLat)
+        .setHTML(`
+          <p>Total trips: ${d3.format(',.2f')(totalTrips)}</p>
+          <p>Transit trips: ${d3.format(',.2f')(clickedData[0].properties['to_trips_transit'])}</p>
+          <p>Auto trips (driver): ${d3.format(',.2f')(clickedData[0].properties['to_trips_driver'])}</p>
+          <p>Auto trips (passenger): ${d3.format(',.2f')(clickedData[0].properties['to_trips_auto_pax'])}</p>
+          <p>Bike trips: ${isNaN(clickedData[0].properties['to_trips_bike']) ? 'n/a' : d3.format(',.2f')(clickedData[0].properties['to_trips_bike'])}</p>
+          <p>Walking trips: ${isNaN(clickedData[0].properties['to_trips_walk']) ? 'n/a' : d3.format(',.2f')(clickedData[0].properties['to_trips_walk'])}</p>
+        `)
+        .setMaxWidth('300px')
+        .addTo(map);
+      } else if (clickedData[0].layer.id === 'trips-from-focus') {
+        let totalTrips = clickedData[0].properties['from_trips_transit']
+          + clickedData[0].properties['from_trips_auto_pax']
+          + clickedData[0].properties['from_trips_driver']
+          + (isNaN(clickedData[0].properties['from_trips_bike']) ? 0 : clickedData[0].properties['from_trips_bike'])
+          + (isNaN(clickedData[0].properties['from_trips_walk']) ? 0 : clickedData[0].properties['from_trips_walk'])
+
         new mapboxgl.Popup()
           .setLngLat(e.lngLat)
           .setHTML(`
             <p>Total trips: ${d3.format(',.2f')(totalTrips)}</p>
-            <p>Transit trips: ${d3.format(',.2f')(tripData['from_trips_transit'])}</p>
-            <p>Auto trips (driver): ${d3.format(',.2f')(tripData['from_trips_driver'])}</p>
-            <p>Auto trips (passenger): ${d3.format(',.2f')(tripData['from_trips_auto_pax'])}</p>
-            <p>Bike trips: ${d3.format(',.2f')(tripData['from_trips_bike'])}</p>
-            <p>Walking trips: ${d3.format(',.2f')(tripData['from_trips_walk'])}</p>
+            <p>Transit trips: ${d3.format(',.2f')(clickedData[0].properties['from_trips_transit'])}</p>
+            <p>Auto trips (driver): ${d3.format(',.2f')(clickedData[0].properties['from_trips_driver'])}</p>
+            <p>Auto trips (passenger): ${d3.format(',.2f')(clickedData[0].properties['from_trips_auto_pax'])}</p>
+            <p>Bike trips: ${isNaN(clickedData[0].properties['from_trips_bike']) ? 'n/a' : d3.format(',.2f')(clickedData[0].properties['from_trips_bike'])}</p>
+            <p>Walking trips: ${isNaN(clickedData[0].properties['from_trips_walk']) ? 'n/a' : d3.format(',.2f')(clickedData[0].properties['from_trips_walk'])}</p>
           `)
           .setMaxWidth('300px')
           .addTo(map);
-      } else if (clickedData.some(item => item.properties['to_trips_transit'] != null)) {
-        const tripData = clickedData.find(item => item.properties['to_trips_transit'] != null).properties;
-        // let totalTrips = tripData['to_trips_transit'] + tripData['to_trips_auto_pax'] + tripData['to_trips_driver']
-        // if (tripData['to_trips_bike']) {
-        //   totalTrips += tripData['to_trips_bike'] + tripData['to_trips_walk']
-        // }
-        new mapboxgl.Popup()
-          .setLngLat(e.lngLat)
-          .setHTML(`
-            // <p>Total trips: ${d3.format(',.2f')(totalTrips)}</p>
-            <p>Transit trips: ${d3.format(',.2f')(tripData['to_trips_transit'])}</p>
-            <p>Auto trips (driver): ${d3.format(',.2f')(tripData['to_trips_driver'])}</p>
-            <p>Auto trips (passenger): ${d3.format(',.2f')(tripData['to_trips_auto_pax'])}</p>
-            <p>Bike trips: ${d3.format(',.2f')(tripData['to_trips_bike'])}</p>
-            <p>Walking trips: ${d3.format(',.2f')(tripData['to_trips_walk'])}</p>
-          `)
-          .setMaxWidth('300px')
-          .addTo(map);
-      } else if (clickedData.some(item => item.properties['from_trips_transit'] != null)) {
-        const tripData = clickedData.find(item => item.properties['from_trips_transit'] != null).properties;
-        // const totalTrips = tripData['from_trips_transit'] + tripData['from_trips_auto_pax'] + tripData['from_trips_driver'] + (isNaN(tripData['from_trips_bike']) ? 0 : tripData['from_trips_bike']) + (isNaN(tripData['from_trips_walk']) ? 0 : tripData['from_trips_walk']);
-        // console.log("!!!!")
-        new mapboxgl.Popup()
-          .setLngLat(e.lngLat)
-          .setHTML(`
-            <p>Transit trips: ${d3.format(',.2f')(tripData['from_trips_transit'])}</p>
-            <p>Auto trips (driver): ${d3.format(',.2f')(tripData['from_trips_driver'])}</p>
-            <p>Auto trips (passenger): ${d3.format(',.2f')(tripData['from_trips_auto_pax'])}</p>
-            <p>Bike trips: ${d3.format(',.2f')(tripData['from_trips_bike'])}</p>
-            <p>Walking trips: ${d3.format(',.2f')(tripData['from_trips_walk'])}</p>
-          `)
-          .setMaxWidth('300px')
-          .addTo(map);
-      } else if (clickedData.some(item => item.properties['timeTO_245'] != null)) {
-        const isochroneData = clickedData.find(item => item.properties['timeTO_245'] != null).properties;
+      } else if (clickedData[0].layer.id === 'ws-isochrone') {
         new mapboxgl.Popup()
         .setLngLat(e.lngLat)
         .setHTML(`
-          <p>TAZ ${isochroneData.ID}</p>
-          <p>Time to West Station: ${d3.format('.2f')(isochroneData['timeTO_245'])} minutes</p>
-          <p>Time from West Station: ${d3.format('.2f')(isochroneData['timeFR_245'])} minutes</p>
-        `)
-        .setMaxWidth('300px')
-        .addTo(map);
-      } else if (clickedData.some(item => item.properties['tabular_Total Population'] != null)) {
-        const tazData = clickedData.find(item => item.properties['tabular_Total Population'] != null).properties;
-        new mapboxgl.Popup()
-        .setLngLat(e.lngLat)
-        .setHTML(`
-          <p>Total population: ${d3.format(',')(tazData['tabular_Total Population'])}</p>
-          <p>Total households: ${d3.format(',')(tazData['tabular_Total Households'])}</p>
-          <p>Total employment: ${d3.format(',')(tazData['tabular_Total Employment'])}</p>
-          <p>Households with 1+ cars: ${tazData['tabular_% of Households with 1+ autos']}%</p>
-          <p>Households with 1+ workers: ${tazData['tabular_% of Households with 1+ workers']}%</p>
-          <p>Retail employment: ${tazData['tabular_% Retail employment']}%</p>
-          <p>Service employment: ${tazData['tabular_% Service employment']}%</p>
-          <p>Basic employment: ${tazData['tabular_% Basic employment']}%</p>
+          <p>TAZ ${clickedData[0].properties.ID}</p>
+          <p>Time to West Station: ${d3.format('.2f')(clickedData[0].properties['timeTO_245'])} minutes</p>
+          <p>Time from West Station: ${d3.format('.2f')(clickedData[0].properties['timeFR_245'])} minutes</p>
         `)
         .setMaxWidth('300px')
         .addTo(map);
