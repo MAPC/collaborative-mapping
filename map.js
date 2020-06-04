@@ -42,90 +42,76 @@ map.on('load', () => {
           coordinates = selectedFeature.features[0].geometry.coordinates[0][selectedFeature.features[0].geometry.coordinates.length - 1];
           break;
         }
+        const questionOne = selectedFeature.features[0].properties.user__question == 1 ? 'selected' : '';
+        const questionTwo = selectedFeature.features[0].properties.user__question == 2 ? 'selected' : '';
+        const questionThree = selectedFeature.features[0].properties.user__question == 3 ? 'selected' : '';
+        const questionFour = selectedFeature.features[0].properties.user__question == 4 ? 'selected' : '';
+        const currentTitle = selectedFeature.features[0].properties.user__title ? selectedFeature.features[0].properties.user__title : '';
+        const currentNotes = selectedFeature.features[0].properties.user__notes ? selectedFeature.features[0].properties.user__notes : '';
         const popup = new mapboxgl.Popup()
           .setHTML(`
             <select id="question" name="question" class="popup__question">
-              <option value="1">1. What are the important origins and destinations people will need to connect via West Station?</option>
-              <option value="2">2. What existing transit routes need improvements, and where?</option>
-              <option value="3">3. What active transportation routes are needed?</option>
-              <option value="4">4. What additional land development scenarios, zoning, parking, or other policies should we model and evaluate?</option>
+              <option value="1" ${questionOne}>1. What are the important origins and destinations people will need to connect via West Station?</option>
+              <option value="2" ${questionTwo}>2. What existing transit routes need improvements, and where?</option>
+              <option value="3" ${questionThree}>3. What active transportation routes are needed?</option>
+              <option value="4" ${questionFour}>4. What additional land development scenarios, zoning, parking, or other policies should we model and evaluate?</option>
             </select> 
-            <input type="text" id="title" placeholder="Title" class="popup__title">
-            <textarea id="notes" rows="5" placeholder="Notes" class="popup__notes"></textarea>
-            <button id="submit">Set</button>`
+            <input type="text" id="title" placeholder="Title" class="popup__title" value=${currentTitle}>
+            <textarea id="notes" rows="5" placeholder="Notes" class="popup__notes">${currentNotes}</textarea>
+            <button id="submit">Save</button>`
           )
           .setMaxWidth('300px')
           .setLngLat(coordinates)
           .addTo(map)
-        
-        const currentQuestion = selectedFeature.features[0].properties.user__question;
-        const currentTitle = selectedFeature.features[0].properties.user__title;
-        const currentNotes = selectedFeature.features[0].properties.user__notes;
-
-        if (currentQuestion) {
-          const selectedOption = document.querySelector(`option[value="${currentQuestion}"]`);
-          selectedOption.selected = true;
-        }
-        if (currentTitle) {
-          document.getElementById("title").defaultValue = currentTitle;
-        }
-
-        if (currentNotes) {
-          document.getElementById("notes").defaultValue = currentNotes;
-        }
 
         popup.getElement().querySelector('#submit').addEventListener('click', () => {
           setFeatureData(selectedFeature.features[0].id, popup);
-        })
+        });
       }
-      
-
-
     } else {
       const clickedData = map.queryRenderedFeatures(
         [e.point.x, e.point.y],
         { layers: ['mbta-stops', 'West Station', 'massbuilds', 'taz', 'trips-to-focus', 'trips-from-focus', 'ws-isochrone'] },
       );
   
-      if (clickedData[0].layer.id === 'mbta-stops' || clickedData[0].layer.id === 'West Station') {
-        const mbtaData = clickedData.find(item => item.properties.layer != undefined).properties;
-          if (mbtaData.layer === 'Commuter-rail_stops') {
-            new mapboxgl.Popup()
-              .setLngLat(e.lngLat)
-              .setHTML(`
-                <p>${mbtaData.LINE_BRNCH}</p>
-                <p>${mbtaData.STATION}</p>
-              `)
-              .setMaxWidth('300px')
-              .addTo(map);
+      if (clickedData[0] && (clickedData[0].layer.id === 'mbta-stops' || clickedData[0].layer.id === 'West Station')) {
+        if (clickedData[0].properties.layer === 'Commuter-rail_stops') {
+          new mapboxgl.Popup()
+            .setLngLat(e.lngLat)
+            .setHTML(`
+              <p>${clickedData[0].properties.LINE_BRNCH}</p>
+              <p>${clickedData[0].properties.STATION}</p>
+            `)
+            .setMaxWidth('300px')
+            .addTo(map);
 
-          } else if (mbtaData.layer === 'MBTA_nodes') {
-            new mapboxgl.Popup()
-              .setLngLat(e.lngLat)
-              .setHTML(`
-                <p>${mbtaData.LINE} ${mbtaData.ROUTE}</p>
-                <p>${mbtaData.STATION}</p>
-              `)
-              .setMaxWidth('300px')
-              .addTo(map);
-          } else if (mbtaData.layer === 'Bus_stops') {
-            new mapboxgl.Popup()
-              .setLngLat(e.lngLat)
-              .setHTML(`
-                <p>${mbtaData.STOP_NAME}</p>
-              `)
-              .setMaxWidth('300px')
-              .addTo(map);
-          } else {
-            new mapboxgl.Popup()
-              .setLngLat(e.lngLat)
-              .setHTML(`
-                <p>${mbtaData.term_name}</p>
-              `)
-              .setMaxWidth('300px')
-              .addTo(map);
-          }
-      } else if (clickedData[0].layer.id === 'massbuilds') {
+        } else if (clickedData[0].properties.layer === 'MBTA_nodes') {
+          new mapboxgl.Popup()
+            .setLngLat(e.lngLat)
+            .setHTML(`
+              <p>${clickedData[0].properties.LINE} ${clickedData[0].properties.ROUTE}</p>
+              <p>${clickedData[0].properties.STATION}</p>
+            `)
+            .setMaxWidth('300px')
+            .addTo(map);
+        } else if (clickedData[0].properties.layer === 'Bus_stops') {
+          new mapboxgl.Popup()
+            .setLngLat(e.lngLat)
+            .setHTML(`
+              <p>${clickedData[0].properties.STOP_NAME}</p>
+            `)
+            .setMaxWidth('300px')
+            .addTo(map);
+        } else {
+          new mapboxgl.Popup()
+            .setLngLat(e.lngLat)
+            .setHTML(`
+              <p>${clickedData[0].properties.term_name}</p>
+            `)
+            .setMaxWidth('300px')
+            .addTo(map);
+        }
+      } else if (clickedData[0] && clickedData[0].layer.id === 'massbuilds') {
         new mapboxgl.Popup()
           .setLngLat(e.lngLat)
           .setHTML(`
@@ -135,7 +121,7 @@ map.on('load', () => {
           `)
           .setMaxWidth('300px')
           .addTo(map);
-      } else if (clickedData[0].layer.id === 'taz') {
+      } else if (clickedData[0] && clickedData[0].layer.id === 'taz') {
         new mapboxgl.Popup()
         .setLngLat(e.lngLat)
         .setHTML(`
@@ -150,7 +136,7 @@ map.on('load', () => {
         `)
         .setMaxWidth('300px')
         .addTo(map);
-      } else if (clickedData[0].layer.id === 'trips-to-focus') {
+      } else if (clickedData[0] && clickedData[0].layer.id === 'trips-to-focus') {
         let totalTrips = clickedData[0].properties['to_trips_transit']
         + clickedData[0].properties['to_trips_auto_pax']
         + clickedData[0].properties['to_trips_driver']
@@ -169,7 +155,7 @@ map.on('load', () => {
         `)
         .setMaxWidth('300px')
         .addTo(map);
-      } else if (clickedData[0].layer.id === 'trips-from-focus') {
+      } else if (clickedData[0] && clickedData[0].layer.id === 'trips-from-focus') {
         let totalTrips = clickedData[0].properties['from_trips_transit']
           + clickedData[0].properties['from_trips_auto_pax']
           + clickedData[0].properties['from_trips_driver']
@@ -188,7 +174,7 @@ map.on('load', () => {
           `)
           .setMaxWidth('300px')
           .addTo(map);
-      } else if (clickedData[0].layer.id === 'ws-isochrone') {
+      } else if (clickedData[0] && clickedData[0].layer.id === 'ws-isochrone') {
         new mapboxgl.Popup()
         .setLngLat(e.lngLat)
         .setHTML(`
@@ -713,7 +699,6 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       
       // Isochrones
       case 'from_west_station':
-        console.log('from')
         choroplethLegend.style.display = "inline";
         entry0.textContent = "NA";
         entry1.textContent = "≤ 15 minutes";
