@@ -24,6 +24,7 @@ map.addControl(draw, 'top-left');
 map.addControl(new mapboxgl.NavigationControl(), 'bottom-left');
 map.scrollZoom.disable();
 map.on('load', () => {
+  console.log(map.getStyle())
   resetMap();
   map.on('click', function(e) {
     const selectedFeature = draw.getSelected();
@@ -83,8 +84,9 @@ map.on('load', () => {
     } else {
       const clickedData = map.queryRenderedFeatures(
         [e.point.x, e.point.y],
-        { layers: ['taz', 'mbta-stops', 'West Station', 'mbta-routes', 'massbuilds', '2040-blocks', 'trips-to-focus'] },
+        { layers: ['taz', 'mbta-stops', 'West Station', 'mbta-routes', 'massbuilds', 'trips-to-focus', 'trips-from-focus'] },
       );
+      console.log(clickedData)
       if (clickedData.some(item => item.properties.layer != null)) {
         const mbtaData = clickedData.find(item => item.properties.layer != undefined).properties;
           if (mbtaData.layer === 'Commuter-rail_stops') {
@@ -134,20 +136,6 @@ map.on('load', () => {
           `)
           .setMaxWidth('300px')
           .addTo(map);
-      } else if (clickedData.some(item => item.properties.blockID != null)) {
-        const projectedData = clickedData.find(item => item.properties.blockID != null).properties;
-        new mapboxgl.Popup()
-        .setLngLat(e.lngLat)
-        .setHTML(`
-          <p>LRTP 2040 Households: ${d3.format(',')(projectedData.lrtp_HH40)}</p>
-          <p>LRTP 2040 Employment: ${d3.format(',')(projectedData.lrtp_EMP40)}</p>
-          <p>FEIR 2040 Households: ${d3.format(',')(projectedData.feir_HH40)}</p>
-          <p>FEIR 2040 Employment: ${d3.format(',')(projectedData.feir_EMP40)}</p>
-          <p>FMAX 2040 Households: ${d3.format(',')(projectedData.fmax_HH40)}</p>
-          <p>FMAX 2040 Employment: ${d3.format(',')(projectedData.fmax_EMP40)}</p>
-        `)
-        .setMaxWidth('300px')
-        .addTo(map);
       } else if (clickedData.some(item => item.properties['from_trips_transit'] != null)) {
         const tripData = clickedData.find(item => item.properties['from_trips_transit'] != null).properties;
         let totalTrips = tripData['from_trips_transit'] + tripData['from_trips_auto_pax'] + tripData['from_trips_driver']
@@ -168,19 +156,34 @@ map.on('load', () => {
           .addTo(map);
       } else if (clickedData.some(item => item.properties['to_trips_transit'] != null)) {
         const tripData = clickedData.find(item => item.properties['to_trips_transit'] != null).properties;
-        let totalTrips = tripData['to_trips_transit'] + tripData['to_trips_auto_pax'] + tripData['to_trips_driver']
-        if (tripData['to_trips_bike']) {
-          totalTrips += tripData['to_trips_bike'] + tripData['to_trips_walk']
-        }
+        // let totalTrips = tripData['to_trips_transit'] + tripData['to_trips_auto_pax'] + tripData['to_trips_driver']
+        // if (tripData['to_trips_bike']) {
+        //   totalTrips += tripData['to_trips_bike'] + tripData['to_trips_walk']
+        // }
         new mapboxgl.Popup()
           .setLngLat(e.lngLat)
           .setHTML(`
-            <p>Total trips: ${d3.format(',.2f')(totalTrips)}</p>
+            // <p>Total trips: ${d3.format(',.2f')(totalTrips)}</p>
             <p>Transit trips: ${d3.format(',.2f')(tripData['to_trips_transit'])}</p>
             <p>Auto trips (driver): ${d3.format(',.2f')(tripData['to_trips_driver'])}</p>
             <p>Auto trips (passenger): ${d3.format(',.2f')(tripData['to_trips_auto_pax'])}</p>
             <p>Bike trips: ${d3.format(',.2f')(tripData['to_trips_bike'])}</p>
             <p>Walking trips: ${d3.format(',.2f')(tripData['to_trips_walk'])}</p>
+          `)
+          .setMaxWidth('300px')
+          .addTo(map);
+      } else if (clickedData.some(item => item.properties['from_trips_transit'] != null)) {
+        const tripData = clickedData.find(item => item.properties['from_trips_transit'] != null).properties;
+        // const totalTrips = tripData['from_trips_transit'] + tripData['from_trips_auto_pax'] + tripData['from_trips_driver'] + (isNaN(tripData['from_trips_bike']) ? 0 : tripData['from_trips_bike']) + (isNaN(tripData['from_trips_walk']) ? 0 : tripData['from_trips_walk']);
+        // console.log("!!!!")
+        new mapboxgl.Popup()
+          .setLngLat(e.lngLat)
+          .setHTML(`
+            <p>Transit trips: ${d3.format(',.2f')(tripData['from_trips_transit'])}</p>
+            <p>Auto trips (driver): ${d3.format(',.2f')(tripData['from_trips_driver'])}</p>
+            <p>Auto trips (passenger): ${d3.format(',.2f')(tripData['from_trips_auto_pax'])}</p>
+            <p>Bike trips: ${d3.format(',.2f')(tripData['from_trips_bike'])}</p>
+            <p>Walking trips: ${d3.format(',.2f')(tripData['from_trips_walk'])}</p>
           `)
           .setMaxWidth('300px')
           .addTo(map);
@@ -764,123 +767,6 @@ document.querySelector('.layers').addEventListener('click', (e) => {
           zeroColor
         ]);
         break;
-      
-      // Projections
-      case 'lrtp_hh':
-        choroplethLegend.style.display = "inline";
-        entry0.textContent = "0";
-        entry1.textContent = "1 - 5";
-        entry2.textContent = "6 - 25";
-        entry3.textContent = "26 - 50";
-        entry4.textContent = "51 - 100";
-        entry5.textContent = "101+";
-        displayCorrectLayer('2040-blocks');
-        map.setPaintProperty('2040-blocks', 'fill-color', ["step",
-          ['get', 'lrtp_HH40'],
-          zeroColor, 1,
-          colors[0], 6,
-          colors[1], 26,
-          colors[2], 51,
-          colors[3], 101,
-          colors[4]
-        ]);
-        break;
-
-    case 'lrtp_emp':
-      choroplethLegend.style.display = "inline";
-      entry0.textContent = "0";
-      entry1.textContent = "1 - 5";
-      entry2.textContent = "6 - 20";
-      entry3.textContent = "21 - 50";
-      entry4.textContent = "51 - 100";
-      entry5.textContent = "101+";
-      displayCorrectLayer('2040-blocks');
-      map.setPaintProperty('2040-blocks', 'fill-color', ["step",
-        ['get', 'lrtp_EMP40'],
-        zeroColor, 1,
-        colors[0], 6,
-        colors[1], 21,
-        colors[2], 51,
-        colors[3], 101,
-        colors[4]
-      ]);
-      break;
-    case 'feir_hh':
-      choroplethLegend.style.display = "inline";
-      entry0.textContent = "0";
-      entry1.textContent = "1 - 5";
-      entry2.textContent = "6 - 25";
-      entry3.textContent = "26 - 50";
-      entry4.textContent = "51 - 100";
-      entry5.textContent = "101+";
-      displayCorrectLayer('2040-blocks');
-      map.setPaintProperty('2040-blocks', 'fill-color', ["step",
-        ['get', 'feir_HH40'],
-        zeroColor, 1,
-        colors[0], 6,
-        colors[1], 26,
-        colors[2], 51,
-        colors[3], 101,
-        colors[4]
-      ]);
-      break;
-    case 'feir_emp':
-      choroplethLegend.style.display = "inline";
-      entry0.textContent = "0";
-      entry1.textContent = "1 - 5";
-      entry2.textContent = "6 - 20";
-      entry3.textContent = "21 - 50";
-      entry4.textContent = "51 - 100";
-      entry5.textContent = "101+";
-      displayCorrectLayer('2040-blocks');
-      map.setPaintProperty('2040-blocks', 'fill-color', ["step",
-        ['get', 'feir_EMP40'],
-        zeroColor, 1,
-        colors[0], 6,
-        colors[1], 21,
-        colors[2], 51,
-        colors[3], 101,
-        colors[4]
-      ]);
-      break;
-    case 'fmax_hh':
-      choroplethLegend.style.display = "inline";
-      entry0.textContent = "0";
-      entry1.textContent = "1 - 5";
-      entry2.textContent = "6 - 25";
-      entry3.textContent = "26 - 50";
-      entry4.textContent = "51 - 100";
-      entry5.textContent = "101+";
-      displayCorrectLayer('2040-blocks');
-      map.setPaintProperty('2040-blocks', 'fill-color', ["step",
-        ['get', 'fmax_HH40'],
-        zeroColor, 1,
-        colors[0], 6,
-        colors[1], 26,
-        colors[2], 51,
-        colors[3], 101,
-        colors[4]
-      ]);
-      break;
-    case 'fmax_emp':
-      choroplethLegend.style.display = "inline";
-      entry0.textContent = "0";
-      entry1.textContent = "1 - 5";
-      entry2.textContent = "6 - 25";
-      entry3.textContent = "26 - 50";
-      entry4.textContent = "51 - 100";
-      entry5.textContent = "101+";
-      displayCorrectLayer('2040-blocks');
-      map.setPaintProperty('2040-blocks', 'fill-color', ["step",
-        ['get', 'fmax_EMP40'],
-        zeroColor, 1,
-        colors[0], 6,
-        colors[1], 26,
-        colors[2], 51,
-        colors[3], 101,
-        colors[4]
-      ]);
-      break;
   }
 });
 
@@ -896,21 +782,20 @@ function toggleLayer(layerId) {
 }
 
 function resetMap() {
-  map.setLayoutProperty('taz', 'visibility', 'none');
   map.setLayoutProperty('massbuilds', 'visibility', 'none');
   map.setLayoutProperty('mbta-stops', 'visibility', 'none');
   map.setLayoutProperty('mbta-routes', 'visibility', 'none');
   map.setLayoutProperty('focus-area', 'visibility', 'none');
   map.setLayoutProperty('focus-area-buffer', 'visibility', 'none');
-  map.setLayoutProperty('2040-blocks', 'visibility', 'none');
-  map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
-  // map.setLayoutProperty('trips-from-focus', 'visibility', 'none');
-  // map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
   map.setLayoutProperty('openspace', 'visibility', 'none');
+  map.setLayoutProperty('taz', 'visibility', 'none');
+  map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
+  map.setLayoutProperty('trips-from-focus', 'visibility', 'none');
+  // map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
 }
 
 function displayCorrectLayer(selectedLayer) {
-  const layers = ['taz', 'trips-to-focus', '2040-blocks'];
+  const layers = ['taz', 'trips-to-focus', 'trips-from-focus'];
   layers.forEach((layer) => {
     if (layer === selectedLayer) {
       map.setLayoutProperty(layer, 'visibility', 'visible');
