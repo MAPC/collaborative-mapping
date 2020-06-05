@@ -16,6 +16,15 @@
     <main id="map" class="map">
       <img class="control__download" src="download.png" />
     </main>
+    <div class="questions">
+      <p class="questions__current-question">
+        1. What are the important origins and destinations people will need to connect via West Station (to, from, or through)?
+      </p>
+      <p class="questions__controls">
+        <button class="questions__controls--back" disabled>&#8592;</button>
+        <button class="questions__controls--forward">&#8594;</button>
+      </p>
+    </div>
     <aside class="sidebar">
       <form class="layers">
         <h3 class="layers__subtitle">Map layers</h3>
@@ -142,5 +151,6 @@
     <script src="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.js"></script>
     <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.js"></script>
     <script src="map.js"></script>
+    <script src="questions.js"></script>
   </body>
 </html>
