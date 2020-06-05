@@ -199,8 +199,8 @@ map.on('load', () => {
         .setLngLat(e.lngLat)
         .setHTML(`
           <p>TAZ ${clickedData[0].properties.ID}</p>
-          <p>Time from West Station: ${d3.format('.2f')(clickedData[0].properties['timeFR_245'])} minutes</p>
-          <p>Time to West Station: ${d3.format('.2f')(clickedData[0].properties['timeTO_245'])} minutes</p>
+          <p>Time from West Station: ${clickedData[0].properties['timeFR_245'] == 99999 ? 'n/a' : d3.format(',.2f')(clickedData[0].properties['timeFR_245']) + " minutes"}</p>
+          <p>Time to West Station: ${clickedData[0].properties['timeTO_245'] == 99999 ? 'n/a' : d3.format(',.2f')(clickedData[0].properties['timeTO_245']) + " minutes"}</p>
         `)
         .setMaxWidth('300px')
         .addTo(map);
