@@ -9,6 +9,7 @@ const backButton = document.querySelector('.questions__controls--back');
 const forwardButton = document.querySelector('.questions__controls--forward');
 const questionText = document.querySelector('.questions__current-question');
 
+backButton.disabled = true;
 document.querySelector('.questions__controls').addEventListener('click', (e) => {
   if (e.target.className === 'questions__controls--back') {
     currentQuestionIndex--;

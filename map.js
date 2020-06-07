@@ -71,7 +71,7 @@ map.on('load', () => {
     } else {
       const clickedData = map.queryRenderedFeatures(
         [e.point.x, e.point.y],
-        { layers: ['mbta-stops', 'West Station', 'massbuilds', 'environmental-justice', 'taz', 'trips-to-focus', 'trips-from-focus', 'ws-isochrone'] },
+        { layers: ['mbta-stops', 'West Station', 'massbuilds', 'environmental-justice', 'taz', 'trips-to-focus', 'trips-from-focus', 'transit-isochrone', 'bike-isochrone'] },
       );
   
       if (clickedData[0] && (clickedData[0].layer.id === 'mbta-stops' || clickedData[0].layer.id === 'West Station')) {
@@ -194,13 +194,23 @@ map.on('load', () => {
           `)
           .setMaxWidth('300px')
           .addTo(map);
-      } else if (clickedData[0] && clickedData[0].layer.id === 'ws-isochrone') {
+      } else if (clickedData[0] && clickedData[0].layer.id === 'transit-isochrone') {
+        console.log(clickedData[0])
         new mapboxgl.Popup()
         .setLngLat(e.lngLat)
         .setHTML(`
-          <p>TAZ ${clickedData[0].properties.ID}</p>
-          <p>Time from West Station: ${clickedData[0].properties['timeFR_245'] == 99999 ? 'n/a' : d3.format(',.2f')(clickedData[0].properties['timeFR_245']) + " minutes"}</p>
-          <p>Time to West Station: ${clickedData[0].properties['timeTO_245'] == 99999 ? 'n/a' : d3.format(',.2f')(clickedData[0].properties['timeTO_245']) + " minutes"}</p>
+          <p>Time from West Station: ${clickedData[0].properties['transit_time_from_246'] == 99999 ? 'n/a' : d3.format(',.2f')(clickedData[0].properties['transit_time_from_246']) + " minutes"}</p>
+          <p>Time to West Station: ${clickedData[0].properties['transit_time_to_246'] == 99999 ? 'n/a' : d3.format(',.2f')(clickedData[0].properties['transit_time_to_246']) + " minutes"}</p>
+        `)
+        .setMaxWidth('300px')
+        .addTo(map);
+      } else if (clickedData[0] && clickedData[0].layer.id === 'bike-isochrone') {
+        console.log(clickedData[0])
+        new mapboxgl.Popup()
+        .setLngLat(e.lngLat)
+        .setHTML(`
+          <p>Time from West Station: ${clickedData[0].properties['travel_time_from_bike'] == 99999 ? 'n/a' : d3.format(',.2f')(clickedData[0].properties['travel_time_from_bike']) + " minutes"}</p>
+          <p>Time to West Station: ${clickedData[0].properties['travel_time_to_bike'] == 99999 ? 'n/a' : d3.format(',.2f')(clickedData[0].properties['travel_time_to_bike']) + " minutes"}</p>
         `)
         .setMaxWidth('300px')
         .addTo(map);
@@ -319,108 +329,6 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       );
       break;
     
-    case 'autos':
-      choroplethLegend.style.display = "inline";
-      entry0.textContent = "0";
-      entry1.textContent = `≤ 59%`;
-      entry2.textContent = "60% - 69%";
-      entry3.textContent = "70% - 79%";
-      entry4.textContent = "80% - 89%";
-      entry5.textContent = "90% - 100%";
-      toggleChoroplethLayer('taz');
-      map.setPaintProperty('taz', 'fill-color', ["step",
-        ['get', 'tabular_% of Households with 1+ autos'],
-        zeroColor, 1,
-        colors[0], 60,
-        colors[1], 70,
-        colors[2], 80,
-        colors[3], 90,
-        colors[4]
-      ]
-      );
-      break;
-
-    case 'workers':
-      choroplethLegend.style.display = "inline";
-      entry0.textContent = "0";
-      entry1.textContent = "≤ 34%";
-      entry2.textContent = "35% - 54%";
-      entry3.textContent = "55% - 69%";
-      entry4.textContent = "70% - 84%";
-      entry5.textContent = "85% - 100%";
-      toggleChoroplethLayer('taz');
-      map.setPaintProperty('taz', 'fill-color', ["step",
-        ['get', 'tabular_% of Households with 1+ workers'],
-        zeroColor, 1,
-        colors[0], 35,
-        colors[1], 55,
-        colors[2], 70,
-        colors[3], 85,
-        colors[4]
-      ]
-      );
-      break;
-
-    case 'retail':
-      choroplethLegend.style.display = "inline";
-      entry0.textContent = "0";
-      entry1.textContent = "1 - 5%";
-      entry2.textContent = "6% - 9%";
-      entry3.textContent = "10% - 14%";
-      entry4.textContent = "15% - 24%";
-      entry5.textContent = "≥ 25%";
-      toggleChoroplethLayer('taz');
-      map.setPaintProperty('taz', 'fill-color', ["step",
-        ['get', 'tabular_% Retail employment'],
-        zeroColor, 1,
-        colors[0], 6,
-        colors[1], 10,
-        colors[2], 15,
-        colors[3], 25,
-        colors[4]
-      ]);
-      break;
-
-    case 'service':
-      choroplethLegend.style.display = "inline";
-      entry0.textContent = "0";
-      entry1.textContent = "≤ 44%";
-      entry2.textContent = "45% - 59%";
-      entry3.textContent = "60% - 69%";
-      entry4.textContent = "70% - 79%";
-      entry5.textContent = "80% - 100%";
-      toggleChoroplethLayer('taz');
-      map.setPaintProperty('taz', 'fill-color', ["step",
-        ['get', 'tabular_% Service employment'],
-        zeroColor, 1,
-        colors[0], 45,
-        colors[1], 60,
-        colors[2], 70,
-        colors[3], 80,
-        colors[4]
-      ]);
-      break;
-
-    case 'basic':
-      choroplethLegend.style.display = "inline";
-      entry0.textContent = "0";
-      entry1.textContent = "1% - 9%";
-      entry2.textContent = "10% - 19%";
-      entry3.textContent = "20% - 29%";
-      entry4.textContent = "30% - 39%";
-      entry5.textContent = "≥ 40%";
-      toggleChoroplethLayer('taz');
-      map.setPaintProperty('taz', 'fill-color', ["step",
-        ['get', 'tabular_% Basic employment'],
-        zeroColor, 1,
-        colors[0], 10,
-        colors[1], 20,
-        colors[2], 30,
-        colors[3], 40,
-        colors[4]
-      ]);
-      break;
-    
     // Trips to focus area
     case 'to_trips_total':
       choroplethLegend.style.display = "inline";
@@ -454,125 +362,10 @@ document.querySelector('.layers').addEventListener('click', (e) => {
           ],
         ]
       )
-    break;
-
-    case 'to_trips_transit':
-      choroplethLegend.style.display = "inline";
-      entry0.textContent = "0";
-      entry1.textContent = "0 - 2";
-      entry2.textContent = "2 - 5";
-      entry3.textContent = "5 - 10";
-      entry4.textContent = "10 - 25";
-      entry5.textContent = "25+";
-      toggleChoroplethLayer('trips-to-focus');
-      map.setPaintProperty('trips-to-focus', 'fill-opacity', 1);
-      map.setPaintProperty('trips-to-focus', 'fill-color', ["step",
-        ['get', 'to_trips_transit'],
-        zeroColor, 0,
-        colors[0], 2,
-        colors[1], 5,
-        colors[2], 10,
-        colors[3], 25,
-        colors[4]
-      ]);
       break;
-    
-    case 'to_trips_auto_pax':
-      choroplethLegend.style.display = "inline";
-      entry0.textContent = "0";
-      entry1.textContent = "0 - 2";
-      entry2.textContent = "2 - 5";
-      entry3.textContent = "5 - 10";
-      entry4.textContent = "10 - 20";
-      entry5.textContent = "20+";
-      toggleChoroplethLayer('trips-to-focus');
-      map.setPaintProperty('trips-to-focus', 'fill-opacity', 1);
-      map.setPaintProperty('trips-to-focus', 'fill-color', ["step",
-        ['get', 'to_trips_auto_pax'],
-        zeroColor, 0,
-        colors[0], 2,
-        colors[1], 5,
-        colors[2], 10,
-        colors[3], 20,
-        colors[4]
-      ]);
-      break;
-
-    case 'to_trips_driver':
-        choroplethLegend.style.display = "inline";
-        entry0.textContent = "0";
-        entry1.textContent = "0 - 5";
-        entry2.textContent = "5 - 10";
-        entry3.textContent = "10 - 25";
-        entry4.textContent = "25 - 50";
-        entry5.textContent = "50+";
-        toggleChoroplethLayer('trips-to-focus');
-        map.setPaintProperty('trips-to-focus', 'fill-opacity', 1);
-        map.setPaintProperty('trips-to-focus', 'fill-color', ["step",
-          ['get', 'to_trips_driver'],
-          zeroColor, 0,
-          colors[0], 5,
-          colors[1], 10,
-          colors[2], 25,
-          colors[3], 50,
-          colors[4]
-        ]);
-        break;
-
-      case 'to_trips_bike':
-        choroplethLegend.style.display = "inline";
-        entry0.textContent = "0";
-        entry1.textContent = "0 - 2";
-        entry2.textContent = "2 - 5";
-        entry3.textContent = "5 - 10";
-        entry4.textContent = "10 - 15";
-        entry5.textContent = "15+";
-        toggleChoroplethLayer('trips-to-focus');
-        map.setPaintProperty('trips-to-focus', 'fill-color', ["step",
-          ['get', 'to_trips_bike'],
-          zeroColor, 0,
-          colors[0], 2,
-          colors[1], 5,
-          colors[2], 10,
-          colors[3], 15,
-          colors[4]
-        ]);
-        map.setPaintProperty('trips-to-focus', 'fill-opacity',
-          ["case",
-            ['has', 'to_trips_bike'],
-              1,
-            0
-        ])
-        break;
-
-      case 'to_trips_walk':
-        choroplethLegend.style.display = "inline";
-        entry0.textContent = "0";
-        entry1.textContent = "0 - 5";
-        entry2.textContent = "5 - 20";
-        entry3.textContent = "20 - 50";
-        entry4.textContent = "50 - 100";
-        entry5.textContent = "50+";
-        toggleChoroplethLayer('trips-to-focus');
-        map.setPaintProperty('trips-to-focus', 'fill-color', ["step",
-          ['get', 'to_trips_walk'],
-          zeroColor, 0,
-          colors[0], 5,
-          colors[1], 20,
-          colors[2], 50,
-          colors[3], 100,
-          colors[4]
-        ]);
-        map.setPaintProperty('trips-to-focus', 'fill-opacity',
-          ["case",
-            ['has', 'to_trips_walk'],
-              1,
-            0
-        ])
-        break;
 
       // Trips from focus area
-      case 'from_trips_total':
+    case 'from_trips_total':
       choroplethLegend.style.display = "inline";
       entry0.textContent = "0";
       entry1.textContent = "0 - 10";
@@ -604,163 +397,88 @@ document.querySelector('.layers').addEventListener('click', (e) => {
           ],
         ]
       )
-    break;
-
-      case 'from_trips_transit':
-        choroplethLegend.style.display = "inline";
-        entry0.textContent = "0";
-        entry1.textContent = "0 - 2";
-        entry2.textContent = "2 - 5";
-        entry3.textContent = "5 - 10";
-        entry4.textContent = "10 - 25";
-        entry5.textContent = "25+";
-        toggleChoroplethLayer('trips-from-focus');
-        map.setPaintProperty('trips-from-focus', 'fill-opacity', 1);
-        map.setPaintProperty('trips-from-focus', 'fill-color', ["step",
-          ['get', 'from_trips_transit'],
-          zeroColor, 0,
-          colors[0], 2,
-          colors[1], 5,
-          colors[2], 10,
-          colors[3], 25,
-          colors[4]
-        ]);
-        break;
-      
-      case 'from_trips_auto_pax':
-        choroplethLegend.style.display = "inline";
-        entry0.textContent = "0";
-        entry1.textContent = "0 - 2";
-        entry2.textContent = "2 - 5";
-        entry3.textContent = "5 - 10";
-        entry4.textContent = "10 - 20";
-        entry5.textContent = "20+";
-        toggleChoroplethLayer('trips-from-focus');
-        map.setPaintProperty('trips-from-focus', 'fill-opacity', 1);
-        map.setPaintProperty('trips-from-focus', 'fill-color', ["step",
-          ['get', 'from_trips_auto_pax'],
-          zeroColor, 0,
-          colors[0], 2,
-          colors[1], 5,
-          colors[2], 10,
-          colors[3], 20,
-          colors[4]
-        ]);
-        break;
-
-      case 'from_trips_driver':
-          choroplethLegend.style.display = "inline";
-          entry0.textContent = "0";
-          entry1.textContent = "0 - 5";
-          entry2.textContent = "5 - 10";
-          entry3.textContent = "10 - 25";
-          entry4.textContent = "25 - 50";
-          entry5.textContent = "50+";
-          toggleChoroplethLayer('trips-from-focus');
-          map.setPaintProperty('trips-from-focus', 'fill-opacity', 1);
-          map.setPaintProperty('trips-from-focus', 'fill-color', ["step",
-            ['get', 'from_trips_driver'],
-            zeroColor, 0,
-            colors[0], 5,
-            colors[1], 10,
-            colors[2], 25,
-            colors[3], 50,
-            colors[4]
-          ]);
-          break;
-
-        case 'from_trips_bike':
-          choroplethLegend.style.display = "inline";
-          entry0.textContent = "0";
-          entry1.textContent = "0 - 2";
-          entry2.textContent = "2 - 5";
-          entry3.textContent = "5 - 10";
-          entry4.textContent = "10 - 15";
-          entry5.textContent = "15+";
-          toggleChoroplethLayer('trips-from-focus');
-          map.setPaintProperty('trips-from-focus', 'fill-color', ["step",
-            ['get', 'from_trips_bike'],
-            zeroColor, 0,
-            colors[0], 2,
-            colors[1], 5,
-            colors[2], 10,
-            colors[3], 15,
-            colors[4]
-          ]);
-          map.setPaintProperty('trips-from-focus', 'fill-opacity',
-            ["case",
-              ['has', 'from_trips_bike'],
-                1,
-              0
-          ])
-          break;
-
-        case 'from_trips_walk':
-          choroplethLegend.style.display = "inline";
-          entry0.textContent = "0";
-          entry1.textContent = "0 - 5";
-          entry2.textContent = "5 - 20";
-          entry3.textContent = "20 - 50";
-          entry4.textContent = "50 - 100";
-          entry5.textContent = "50+";
-          toggleChoroplethLayer('trips-from-focus');
-          map.setPaintProperty('trips-from-focus', 'fill-color', ["step",
-            ['get', 'from_trips_walk'],
-            zeroColor, 0,
-            colors[0], 5,
-            colors[1], 20,
-            colors[2], 50,
-            colors[3], 100,
-            colors[4]
-          ]);
-          map.setPaintProperty('trips-from-focus', 'fill-opacity',
-            ["case",
-              ['has', 'from_trips_walk'],
-                1,
-              0
-          ])
-          break;
+      break;
       
       // Isochrones
-      case 'from_west_station':
-        choroplethLegend.style.display = "inline";
-        entry0.textContent = "NA";
-        entry1.textContent = "≤ 15 minutes";
-        entry2.textContent = "15 - 30 minutes";
-        entry3.textContent = "30 - 45 minutes";
-        entry4.textContent = "45 - 60 minutes";
-        entry5.textContent = "60+ minutes";
-        toggleChoroplethLayer('ws-isochrone');
-        map.setPaintProperty('ws-isochrone', 'fill-color', ["step",
-          ['get', 'timeFR_245'],
-          colors[0], 16,
-          colors[1], 31,
-          colors[2], 46,
-          colors[3], 61,
-          colors[4], 99998,
-          zeroColor
-        ]);
-        break;
+    case 'transit_from_west_station':
+      choroplethLegend.style.display = "inline";
+      entry0.textContent = "NA";
+      entry1.textContent = "≤ 15 minutes";
+      entry2.textContent = "15 - 30 minutes";
+      entry3.textContent = "30 - 45 minutes";
+      entry4.textContent = "45 - 60 minutes";
+      entry5.textContent = "60+ minutes";
+      toggleChoroplethLayer('transit-isochrone');
+      map.setPaintProperty('transit-isochrone', 'fill-color', ["step",
+        ['get', 'transit_time_from_246'],
+        colors[0], 16,
+        colors[1], 31,
+        colors[2], 46,
+        colors[3], 61,
+        colors[4], 99998,
+        zeroColor
+      ]);
+      break;
 
-      case 'to_west_station':
-        choroplethLegend.style.display = "inline";
-        entry0.textContent = "NA";
-        entry1.textContent = "≤ 15 minutes";
-        entry2.textContent = "15 - 30 minutes";
-        entry3.textContent = "30 - 45 minutes";
-        entry4.textContent = "45 - 60 minutes";
-        entry5.textContent = "60+ minutes";
-        toggleChoroplethLayer('ws-isochrone');
-        map.setPaintProperty('ws-isochrone', 'fill-color', ["step",
-          ['get', 'timeTO_245'],
-          colors[0], 16,
-          colors[1], 31,
-          colors[2], 46,
-          colors[3], 61,
-          colors[4], 99998,
-          zeroColor
-        ]);
-        break;
+    case 'transit_to_west_station':
+      choroplethLegend.style.display = "inline";
+      entry0.textContent = "NA";
+      entry1.textContent = "≤ 15 minutes";
+      entry2.textContent = "15 - 30 minutes";
+      entry3.textContent = "30 - 45 minutes";
+      entry4.textContent = "45 - 60 minutes";
+      entry5.textContent = "60+ minutes";
+      toggleChoroplethLayer('transit-isochrone');
+      map.setPaintProperty('transit-isochrone', 'fill-color', ["step",
+        ['get', 'transit_time_to_246'],
+        colors[0], 16,
+        colors[1], 31,
+        colors[2], 46,
+        colors[3], 61,
+        colors[4], 99998,
+        zeroColor
+      ]);
+      break;
+
+    case 'bike_from_west_station':
+      choroplethLegend.style.display = "inline";
+      entry0.textContent = "NA";
+      entry1.textContent = "≤ 15 minutes";
+      entry2.textContent = "15 - 30 minutes";
+      entry3.textContent = "30 - 45 minutes";
+      entry4.textContent = "45 - 60 minutes";
+      entry5.textContent = "60+ minutes";
+      toggleChoroplethLayer('bike-isochrone');
+      map.setPaintProperty('bike-isochrone', 'fill-color', ["step",
+        ['get', 'travel_time_from_bike'],
+        colors[0], 16,
+        colors[1], 31,
+        colors[2], 46,
+        colors[3], 61,
+        colors[4], 99998,
+        zeroColor
+      ]);
+      break;
+
+    case 'bike_to_west_station':
+      choroplethLegend.style.display = "inline";
+      entry0.textContent = "NA";
+      entry1.textContent = "≤ 15 minutes";
+      entry2.textContent = "15 - 30 minutes";
+      entry3.textContent = "30 - 45 minutes";
+      entry4.textContent = "45 - 60 minutes";
+      entry5.textContent = "60+ minutes";
+      toggleChoroplethLayer('bike-isochrone');
+      map.setPaintProperty('bike-isochrone', 'fill-color', ["step",
+        ['get', 'travel_time_to_bike'],
+        colors[0], 16,
+        colors[1], 31,
+        colors[2], 46,
+        colors[3], 61,
+        colors[4], 99998,
+        zeroColor
+      ]);
+      break;
   }
 });
 
@@ -785,12 +503,13 @@ function resetMap() {
   map.setLayoutProperty('taz', 'visibility', 'none');
   map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
   map.setLayoutProperty('trips-from-focus', 'visibility', 'none');
-  map.setLayoutProperty('ws-isochrone', 'visibility', 'none');
+  map.setLayoutProperty('transit-isochrone', 'visibility', 'none');
+  map.setLayoutProperty('bike-isochrone', 'visibility', 'none');
   map.setLayoutProperty('environmental-justice', 'visibility', 'none');
 }
 
 function toggleChoroplethLayer(selectedLayer) {
-  const layers = ['taz', 'trips-to-focus', 'trips-from-focus', 'ws-isochrone'];
+  const layers = ['taz', 'trips-to-focus', 'trips-from-focus', 'transit-isochrone', 'bike-isochrone'];
   layers.forEach((layer) => {
     if (layer === selectedLayer) {
       map.setLayoutProperty(layer, 'visibility', 'visible');

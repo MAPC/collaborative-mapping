@@ -17,7 +17,7 @@ p {
 .map {
   bottom: 0;
   top: 0;
-  width: calc(100% - 300px);
+  width: calc(100% - 360px);
 }
 
 .questions {
@@ -29,7 +29,7 @@ p {
   justify-content: space-between;
   padding: 10px;
   position: absolute;
-  right: 310px;
+  right: 370px;
   top: 10px;
   width: 300px;
 }
@@ -43,7 +43,7 @@ p {
 
 .sidebar {
   background: rgba(255, 255, 255, .5);
-  width: 300px;
+  width: 360px;
   overflow-y: scroll;
 }
 
