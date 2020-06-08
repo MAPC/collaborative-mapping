@@ -269,7 +269,8 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       break;
 
     case 'mbta-stops':
-      toggleFeatureLayer('mbta-stops')
+      toggleMbtaStops();
+      // toggleFeatureLayer('mbta-stops')
       break;
     
     case 'massbuilds':
@@ -480,6 +481,26 @@ document.querySelector('.layers').addEventListener('click', (e) => {
 });
 
 saveGeojson();
+function toggleMbtaStops() {
+  const mbtaCheckbox = document.querySelector("#mbta-stops");
+  console.log(mbtaCheckbox);
+  if (mbtaCheckbox.checked) {
+    map.setPaintProperty('mbta-stops', 'icon-opacity', 1)
+  } else {
+    map.setPaintProperty('mbta-stops', 'icon-opacity', [
+      "case",
+      [
+        "match",
+        ["get", "STOP"],
+        ["West Station (Proposed)"],
+        false,
+        true
+      ],
+      0,
+      1
+    ])
+  }
+}
 
 function toggleFeatureLayer(layerId) {
   const visibility = map.getLayoutProperty(layerId, 'visibility');
@@ -492,7 +513,6 @@ function toggleFeatureLayer(layerId) {
 
 function resetMap() {
   map.setLayoutProperty('massbuilds', 'visibility', 'none');
-  map.setLayoutProperty('mbta-stops', 'visibility', 'none');
   map.setLayoutProperty('mbta-routes', 'visibility', 'none');
   map.setLayoutProperty('focus-area', 'visibility', 'none');
   map.setLayoutProperty('focus-area-buffer', 'visibility', 'none');
@@ -502,10 +522,18 @@ function resetMap() {
   map.setLayoutProperty('transit-isochrone', 'visibility', 'none');
   map.setLayoutProperty('bike-isochrone', 'visibility', 'none');
   map.setLayoutProperty('environmental-justice', 'visibility', 'none');
-}
-
-function mbtaLayerVisibility() {
-
+  map.setPaintProperty('mbta-stops', 'icon-opacity', [
+    "case",
+    [
+      "match",
+      ["get", "STOP"],
+      ["West Station (Proposed)"],
+      false,
+      true
+    ],
+    0,
+    1
+  ])
 }
 
 function toggleChoroplethLayer(selectedLayer) {
