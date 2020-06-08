@@ -129,7 +129,7 @@ map.on('load', () => {
               <option value="3" ${questionThree}>3. What active transportation routes are needed?</option>
               <option value="4" ${questionFour}>4. What additional land development scenarios, zoning, parking, or other policies should we model and evaluate?</option>
             </select> 
-            <input type="text" id="title" placeholder="Title" class="popup__title" value=${currentTitle}>
+            <input type="text" id="title" placeholder="Title" class="popup__title" value="${currentTitle}">
             <textarea id="notes" rows="5" placeholder="Notes" class="popup__notes">${currentNotes}</textarea>
             <button id="submit">Save</button>`
           )
