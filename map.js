@@ -148,11 +148,6 @@ map.on('load', () => {
           <p>Total population: ${d3.format(',')(clickedData[0].properties['tabular_Total Population'])}</p>
           <p>Total households: ${d3.format(',')(clickedData[0].properties['tabular_Total Households'])}</p>
           <p>Total employment: ${d3.format(',')(clickedData[0].properties['tabular_Total Employment'])}</p>
-          <p>Households with 1+ cars: ${clickedData[0].properties['tabular_% of Households with 1+ autos']}%</p>
-          <p>Households with 1+ workers: ${clickedData[0].properties['tabular_% of Households with 1+ workers']}%</p>
-          <p>Retail employment: ${clickedData[0].properties['tabular_% Retail employment']}%</p>
-          <p>Service employment: ${clickedData[0].properties['tabular_% Service employment']}%</p>
-          <p>Basic employment: ${clickedData[0].properties['tabular_% Basic employment']}%</p>
         `)
         .setMaxWidth('300px')
         .addTo(map);
@@ -166,12 +161,7 @@ map.on('load', () => {
       new mapboxgl.Popup()
         .setLngLat(e.lngLat)
         .setHTML(`
-          <p>Total trips: ${d3.format(',.2f')(totalTrips)}</p>
-          <p>Transit trips: ${d3.format(',.2f')(clickedData[0].properties['to_trips_transit'])}</p>
-          <p>Auto trips (driver): ${d3.format(',.2f')(clickedData[0].properties['to_trips_driver'])}</p>
-          <p>Auto trips (passenger): ${d3.format(',.2f')(clickedData[0].properties['to_trips_auto_pax'])}</p>
-          <p>Bike trips: ${isNaN(clickedData[0].properties['to_trips_bike']) ? 'n/a' : d3.format(',.2f')(clickedData[0].properties['to_trips_bike'])}</p>
-          <p>Walking trips: ${isNaN(clickedData[0].properties['to_trips_walk']) ? 'n/a' : d3.format(',.2f')(clickedData[0].properties['to_trips_walk'])}</p>
+          <p>Approx. <strong>${d3.format(',.2f')(totalTrips)}</strong> trips to focus area per weekday morning (6am-9am)</p>
         `)
         .setMaxWidth('300px')
         .addTo(map);
@@ -185,12 +175,7 @@ map.on('load', () => {
         new mapboxgl.Popup()
           .setLngLat(e.lngLat)
           .setHTML(`
-            <p>Total trips: ${d3.format(',.2f')(totalTrips)}</p>
-            <p>Transit trips: ${d3.format(',.2f')(clickedData[0].properties['from_trips_transit'])}</p>
-            <p>Auto trips (driver): ${d3.format(',.2f')(clickedData[0].properties['from_trips_driver'])}</p>
-            <p>Auto trips (passenger): ${d3.format(',.2f')(clickedData[0].properties['from_trips_auto_pax'])}</p>
-            <p>Bike trips: ${isNaN(clickedData[0].properties['from_trips_bike']) ? 'n/a' : d3.format(',.2f')(clickedData[0].properties['from_trips_bike'])}</p>
-            <p>Walking trips: ${isNaN(clickedData[0].properties['from_trips_walk']) ? 'n/a' : d3.format(',.2f')(clickedData[0].properties['from_trips_walk'])}</p>
+            <p>Approx. <strong>${d3.format(',.2f')(totalTrips)}</strong> trips from focus area per weekday morning (6am-9am)</p>
           `)
           .setMaxWidth('300px')
           .addTo(map);
