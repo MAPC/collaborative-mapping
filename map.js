@@ -257,8 +257,8 @@ map.on('load', () => {
         new mapboxgl.Popup()
         .setLngLat(e.lngLat)
         .setHTML(`
-          <p>Time from West Station: ${clickedData[0].properties['transit_time_from_246'] == 99999 ? 'n/a' : d3.format(',.2f')(clickedData[0].properties['transit_time_from_246']) + " minutes"}</p>
-          <p>Time to West Station: ${clickedData[0].properties['transit_time_to_246'] == 99999 ? 'n/a' : d3.format(',.2f')(clickedData[0].properties['transit_time_to_246']) + " minutes"}</p>
+          <p>Time from West Station: ${clickedData[0].properties['transit_time_from_246'] == -2 ? 'n/a' : d3.format(',.2f')(clickedData[0].properties['transit_time_from_246']) + " minutes"}</p>
+          <p>Time to West Station: ${clickedData[0].properties['transit_time_to_246'] == -2 ? 'n/a' : d3.format(',.2f')(clickedData[0].properties['transit_time_to_246']) + " minutes"}</p>
         `)
         .setMaxWidth('300px')
         .addTo(map);
@@ -267,8 +267,8 @@ map.on('load', () => {
         new mapboxgl.Popup()
         .setLngLat(e.lngLat)
         .setHTML(`
-          <p>Time from West Station: ${clickedData[0].properties['travel_time_from_bike'] == 99999 ? 'n/a' : d3.format(',.2f')(clickedData[0].properties['travel_time_from_bike']) + " minutes"}</p>
-          <p>Time to West Station: ${clickedData[0].properties['travel_time_to_bike'] == 99999 ? 'n/a' : d3.format(',.2f')(clickedData[0].properties['travel_time_to_bike']) + " minutes"}</p>
+          <p>Time from West Station: ${clickedData[0].properties['travel_time_from_bike'] == -1 ? 'n/a' : d3.format(',.2f')(clickedData[0].properties['travel_time_from_bike']) + " minutes"}</p>
+          <p>Time to West Station: ${clickedData[0].properties['travel_time_to_bike'] == -1 ? 'n/a' : d3.format(',.2f')(clickedData[0].properties['travel_time_to_bike']) + " minutes"}</p>
         `)
         .setMaxWidth('300px')
         .addTo(map);
@@ -326,10 +326,10 @@ document.querySelector('.layers').addEventListener('click', (e) => {
     case 'population':
       choroplethLegend.style.display = "inline";
       entry0.textContent = "0";
-      entry1.textContent = "1 - 999";
-      entry2.textContent = "1,000 - 1,999";
-      entry3.textContent = "2,000 - 2,999";
-      entry4.textContent = "3,000 - 3,999";
+      entry1.textContent = "1–999";
+      entry2.textContent = "1,000–1,999";
+      entry3.textContent = "2,000–2,999";
+      entry4.textContent = "3,000–3,999";
       entry5.textContent = "4,000+";
       toggleChoroplethLayer('taz');
       map.setPaintProperty('taz', 'fill-color', 
@@ -348,10 +348,10 @@ document.querySelector('.layers').addEventListener('click', (e) => {
     case 'households':
       choroplethLegend.style.display = "inline";
       entry0.textContent = "0";
-      entry1.textContent = "1 - 499";
-      entry2.textContent = "500 - 999";
-      entry3.textContent = "1,000 - 1,499";
-      entry4.textContent = "1,500 - 1,999";
+      entry1.textContent = "1–499";
+      entry2.textContent = "500–999";
+      entry3.textContent = "1,000–1,499";
+      entry4.textContent = "1,500–1,999";
       entry5.textContent = "2,000+";
       toggleChoroplethLayer('taz');
       map.setPaintProperty('taz', 'fill-color', ["step",
@@ -369,10 +369,10 @@ document.querySelector('.layers').addEventListener('click', (e) => {
     case 'employment':
       choroplethLegend.style.display = "inline";
       entry0.textContent = "0";
-      entry1.textContent = "1 - 159";
-      entry2.textContent = "160 - 319";
-      entry3.textContent = "320 - 549";
-      entry4.textContent = "550 - 999";
+      entry1.textContent = "1–159";
+      entry2.textContent = "160–319";
+      entry3.textContent = "320–549";
+      entry4.textContent = "550–999";
       entry5.textContent = "1,000+";
       toggleChoroplethLayer('taz');
       map.setPaintProperty('taz', 'fill-color', ["step",
@@ -391,10 +391,10 @@ document.querySelector('.layers').addEventListener('click', (e) => {
     case 'to_trips_total':
       choroplethLegend.style.display = "inline";
       entry0.textContent = "0";
-      entry1.textContent = "0 - 10";
-      entry2.textContent = "10 - 25";
-      entry3.textContent = "25-50";
-      entry4.textContent = "50 - 100";
+      entry1.textContent = "0–10";
+      entry2.textContent = "10–25";
+      entry3.textContent = "25–50";
+      entry4.textContent = "50–100";
       entry5.textContent = "100+";
       toggleChoroplethLayer('trips-to-focus');
       map.setPaintProperty('trips-to-focus', 'fill-opacity', 1);
@@ -426,10 +426,10 @@ document.querySelector('.layers').addEventListener('click', (e) => {
     case 'from_trips_total':
       choroplethLegend.style.display = "inline";
       entry0.textContent = "0";
-      entry1.textContent = "0 - 10";
-      entry2.textContent = "10 - 25";
-      entry3.textContent = "25-50";
-      entry4.textContent = "50 - 100";
+      entry1.textContent = "0–10";
+      entry2.textContent = "10–25";
+      entry3.textContent = "25–50";
+      entry4.textContent = "50–100";
       entry5.textContent = "100+";
       toggleChoroplethLayer('trips-from-focus');
       map.setPaintProperty('trips-from-focus', 'fill-opacity', 1);
@@ -458,83 +458,83 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       break;
       
       // Isochrones
-    case 'transit_from_west_station':
-      choroplethLegend.style.display = "inline";
-      entry0.textContent = "NA";
-      entry1.textContent = "≤ 15 minutes";
-      entry2.textContent = "15 - 30 minutes";
-      entry3.textContent = "30 - 45 minutes";
-      entry4.textContent = "45 - 60 minutes";
-      entry5.textContent = "60+ minutes";
-      toggleChoroplethLayer('transit-isochrone');
-      map.setPaintProperty('transit-isochrone', 'fill-color', ["step",
-        ['get', 'transit_time_from_246'],
-        colors[0], 16,
-        colors[1], 31,
-        colors[2], 46,
-        colors[3], 61,
-        colors[4], 99998,
-        zeroColor
-      ]);
-      break;
-
     case 'transit_to_west_station':
       choroplethLegend.style.display = "inline";
       entry0.textContent = "NA";
       entry1.textContent = "≤ 15 minutes";
-      entry2.textContent = "15 - 30 minutes";
-      entry3.textContent = "30 - 45 minutes";
-      entry4.textContent = "45 - 60 minutes";
+      entry2.textContent = "15–30 minutes";
+      entry3.textContent = "30–45 minutes";
+      entry4.textContent = "45–60 minutes";
       entry5.textContent = "60+ minutes";
       toggleChoroplethLayer('transit-isochrone');
       map.setPaintProperty('transit-isochrone', 'fill-color', ["step",
         ['get', 'transit_time_to_246'],
+        zeroColor, 0,
         colors[0], 16,
         colors[1], 31,
         colors[2], 46,
         colors[3], 61,
-        colors[4], 99998,
-        zeroColor
+        colors[4]
       ]);
       break;
-
-    case 'bike_from_west_station':
+    
+    case 'transit_from_west_station':
       choroplethLegend.style.display = "inline";
       entry0.textContent = "NA";
       entry1.textContent = "≤ 15 minutes";
-      entry2.textContent = "15 - 30 minutes";
-      entry3.textContent = "30 - 45 minutes";
-      entry4.textContent = "45 - 60 minutes";
+      entry2.textContent = "15–30 minutes";
+      entry3.textContent = "30–45 minutes";
+      entry4.textContent = "45–60 minutes";
       entry5.textContent = "60+ minutes";
-      toggleChoroplethLayer('bike-isochrone');
-      map.setPaintProperty('bike-isochrone', 'fill-color', ["step",
-        ['get', 'travel_time_from_bike'],
+      toggleChoroplethLayer('transit-isochrone');
+      map.setPaintProperty('transit-isochrone', 'fill-color', ["step",
+        ['get', 'transit_time_from_246'],
+        zeroColor, 0,
         colors[0], 16,
         colors[1], 31,
         colors[2], 46,
         colors[3], 61,
-        colors[4], 99998,
-        zeroColor
+        colors[4]
       ]);
       break;
 
     case 'bike_to_west_station':
       choroplethLegend.style.display = "inline";
       entry0.textContent = "NA";
-      entry1.textContent = "≤ 15 minutes";
-      entry2.textContent = "15 - 30 minutes";
-      entry3.textContent = "30 - 45 minutes";
-      entry4.textContent = "45 - 60 minutes";
-      entry5.textContent = "60+ minutes";
+      entry1.textContent = "≤ 5 minutes";
+      entry2.textContent = "5–10 minutes";
+      entry3.textContent = "10–15 minutes";
+      entry4.textContent = "15–20 minutes";
+      entry5.textContent = "20+ minutes";
       toggleChoroplethLayer('bike-isochrone');
       map.setPaintProperty('bike-isochrone', 'fill-color', ["step",
         ['get', 'travel_time_to_bike'],
-        colors[0], 16,
-        colors[1], 31,
-        colors[2], 46,
-        colors[3], 61,
-        colors[4], 99998,
-        zeroColor
+        zeroColor, 0,
+        colors[0], 5,
+        colors[1], 10,
+        colors[2], 15,
+        colors[3], 20,
+        colors[4]
+      ]);
+      break;
+    
+    case 'bike_from_west_station':
+      choroplethLegend.style.display = "inline";
+      entry0.textContent = "NA";
+      entry1.textContent = "≤ 5 minutes";
+      entry2.textContent = "5–10 minutes";
+      entry3.textContent = "10–15 minutes";
+      entry4.textContent = "15–20 minutes";
+      entry5.textContent = "20+ minutes";
+      toggleChoroplethLayer('bike-isochrone');
+      map.setPaintProperty('bike-isochrone', 'fill-color', ["step",
+        ['get', 'travel_time_from_bike'],
+        zeroColor, 0,
+        colors[0], 5,
+        colors[1], 10,
+        colors[2], 15,
+        colors[3], 20,
+        colors[4]
       ]);
       break;
   }
