@@ -1,7 +1,7 @@
 mapboxgl.accessToken = 'pk.eyJ1IjoiaWhpbGwiLCJhIjoiY2plZzUwMTRzMW45NjJxb2R2Z2thOWF1YiJ9.szIAeMS4c9YTgNsJeG36gg';
 const map = new mapboxgl.Map({
   container: 'map',
-  style: 'mapbox://styles/ihill/cka3y91rj0v1g1inrzaetrs9e/draft',
+  style: 'mapbox://styles/ihill/cka3y91rj0v1g1inrzaetrs9e',
   center: [-71.14231, 42.35887],
   zoom: 12,
 });
@@ -220,7 +220,6 @@ map.on('load', () => {
         .setMaxWidth('300px')
         .addTo(map);
       } else if (clickedData[0] && clickedData[0].layer.id === 'transit-isochrone') {
-        console.log(clickedData[0])
         new mapboxgl.Popup()
         .setLngLat(e.lngLat)
         .setHTML(`
@@ -270,7 +269,6 @@ document.querySelector('.layers').addEventListener('click', (e) => {
 
     case 'mbta-stops':
       toggleMbtaStops();
-      // toggleFeatureLayer('mbta-stops')
       break;
     
     case 'massbuilds':
@@ -280,6 +278,10 @@ document.querySelector('.layers').addEventListener('click', (e) => {
         massbuildsLegend.style.display = "inline";
       }
       toggleFeatureLayer('massbuilds');
+      break;
+
+    case 'bikes':
+      toggleFeatureLayer('bike-lanes');
       break;
     
     case 'openspace':
@@ -482,9 +484,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
 
 saveGeojson();
 function toggleMbtaStops() {
-  const mbtaCheckbox = document.querySelector("#mbta-stops");
-  console.log(mbtaCheckbox);
-  if (mbtaCheckbox.checked) {
+  if (document.querySelector("#mbta-stops").checked) {
     map.setPaintProperty('mbta-stops', 'icon-opacity', 1)
   } else {
     map.setPaintProperty('mbta-stops', 'icon-opacity', [
@@ -522,6 +522,7 @@ function resetMap() {
   map.setLayoutProperty('transit-isochrone', 'visibility', 'none');
   map.setLayoutProperty('bike-isochrone', 'visibility', 'none');
   map.setLayoutProperty('environmental-justice', 'visibility', 'none');
+  map.setLayoutProperty('bike-lanes', 'visibility', 'none');
   map.setPaintProperty('mbta-stops', 'icon-opacity', [
     "case",
     [
