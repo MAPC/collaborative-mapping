@@ -18,6 +18,79 @@ const draw = new MapboxDraw({
     line_string: true,
   },
   userProperties: true,
+  styles: [
+    {
+      'id': 'highlight-active-points',
+      'type': 'circle',
+      'filter': ['all',
+        ['==', '$type', 'Point'],
+        ['==', 'meta', 'feature'],
+        ['==', 'active', 'true']],
+      'paint': {
+        'circle-radius': 8,
+        'circle-color': '#233069'
+      }
+    },
+    {
+      'id': 'inactive-points',
+      'type': 'circle',
+      'filter': ['all',
+        ['==', '$type', 'Point'],
+        ['==', 'meta', 'feature'],
+        ['==', 'active', 'false']],
+      'paint': {
+        'circle-radius': 6,
+        'circle-color': '#0097C4'
+      }
+    },
+    {
+      "id": "gl-draw-line",
+      "type": "line",
+      "filter": ["all", ["==", "$type", "LineString"], ["!=", "mode", "static"]],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#0097C4",
+        "line-dasharray": [0.2, 2],
+        "line-width": 4
+      }
+    },
+    {
+      "id": "gl-draw-polygon-fill",
+      "type": "fill",
+      "filter": ["all", ["==", "$type", "Polygon"], ["!=", "mode", "static"]],
+      "paint": {
+        "fill-color": "#0097C4",
+        "fill-outline-color": "#0097C4",
+        "fill-opacity": 0.3
+      }
+    },
+    {
+      "id": "gl-draw-polygon-stroke-active",
+      "type": "line",
+      "filter": ["all", ["==", "$type", "Polygon"], ["!=", "mode", "static"]],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#0097C4",
+        "line-dasharray": [0.2, 2],
+        "line-width": 4
+      }
+    },
+    {
+      "id": "gl-draw-polygon-and-line-vertex-halo-active",
+      "type": "circle",
+      "filter": ["all", ["==", "meta", "vertex"], ["==", "$type", "Point"], ["!=", "mode", "static"]],
+      'paint': {
+        'circle-radius': 8,
+        'circle-color': '#233069'
+      }
+    },
+  ]
 });
 
 map.addControl(draw, 'top-left');
