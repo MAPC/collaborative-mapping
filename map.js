@@ -1,7 +1,7 @@
 mapboxgl.accessToken = 'pk.eyJ1IjoiaWhpbGwiLCJhIjoiY2plZzUwMTRzMW45NjJxb2R2Z2thOWF1YiJ9.szIAeMS4c9YTgNsJeG36gg';
 const map = new mapboxgl.Map({
   container: 'map',
-  style: 'mapbox://styles/ihill/cka3y91rj0v1g1inrzaetrs9e',
+  style: 'mapbox://styles/ihill/cka3y91rj0v1g1inrzaetrs9e/draft',
   center: [-71.14231, 42.35887],
   zoom: 12,
 });
@@ -144,46 +144,25 @@ map.on('load', () => {
     } else {
       const clickedData = map.queryRenderedFeatures(
         [e.point.x, e.point.y],
-        { layers: ['mbta-stops', 'West Station', 'massbuilds', 'environmental-justice', 'taz', 'trips-to-focus', 'trips-from-focus', 'transit-isochrone', 'bike-isochrone'] },
+        { layers: ['mbta-stops', 'massbuilds', 'environmental-justice', 'taz', 'avg-trips', 'transit-isochrone', 'bike-isochrone'] },
       );
   
-      if (clickedData[0] && (clickedData[0].layer.id === 'mbta-stops' || clickedData[0].layer.id === 'West Station')) {
-        if (clickedData[0].properties.layer === 'Commuter-rail_stops') {
-          new mapboxgl.Popup()
-            .setLngLat(e.lngLat)
-            .setHTML(`
-              <p>${clickedData[0].properties.LINE_BRNCH}</p>
-              <p>${clickedData[0].properties.STATION}</p>
-            `)
-            .setMaxWidth('300px')
-            .addTo(map);
-
-        } else if (clickedData[0].properties.layer === 'MBTA_nodes') {
-          new mapboxgl.Popup()
-            .setLngLat(e.lngLat)
-            .setHTML(`
-              <p>${clickedData[0].properties.LINE} ${clickedData[0].properties.ROUTE}</p>
-              <p>${clickedData[0].properties.STATION}</p>
-            `)
-            .setMaxWidth('300px')
-            .addTo(map);
-        } else if (clickedData[0].properties.layer === 'Bus_stops') {
-          new mapboxgl.Popup()
-            .setLngLat(e.lngLat)
-            .setHTML(`
-              <p>${clickedData[0].properties.STOP_NAME}</p>
-            `)
-            .setMaxWidth('300px')
-            .addTo(map);
-        } else {
-          new mapboxgl.Popup()
-            .setLngLat(e.lngLat)
-            .setHTML(`
-              <p>${clickedData[0].properties.term_name}</p>
-            `)
-            .setMaxWidth('300px')
-            .addTo(map);
+      if (clickedData[0] && (clickedData[0].layer.id === 'mbta-stops')) {
+        let lineData = '';
+        if (clickedData[0].properties.LINE) {
+          lineData = `<p>${clickedData[0].properties.LINE}</p>`
         }
+        if (clickedData[0].properties.LINE && clickedData[0].properties.ROUTE) {
+          lineData = `<p>${clickedData[0].properties.LINE} - ${clickedData[0].properties.ROUTE}</p>`
+        }
+        new mapboxgl.Popup()
+          .setLngLat(e.lngLat)
+          .setHTML(`
+            <p>${clickedData[0].properties.STOP}</p>
+            ${lineData}
+          `)
+          .setMaxWidth('300px')
+          .addTo(map);
       } else if (clickedData[0] && clickedData[0].layer.id === 'massbuilds') {
         new mapboxgl.Popup()
           .setLngLat(e.lngLat)
@@ -224,7 +203,8 @@ map.on('load', () => {
         `)
         .setMaxWidth('300px')
         .addTo(map);
-      } else if (clickedData[0] && clickedData[0].layer.id === 'trips-to-focus') {
+      } else if (clickedData[0] && clickedData[0].layer.id === 'avg-trips') {
+        console.log(clickedData[0])
         let totalTrips = clickedData[0].properties['to_trips_transit']
         + clickedData[0].properties['to_trips_auto_pax']
         + clickedData[0].properties['to_trips_driver']
@@ -234,24 +214,11 @@ map.on('load', () => {
       new mapboxgl.Popup()
         .setLngLat(e.lngLat)
         .setHTML(`
-          <p>Approx. <strong>${d3.format(',.2f')(totalTrips)}</strong> trips to focus area per weekday morning (6am-9am)</p>
+          <p>Approx. <strong>${d3.format(',.2f')(clickedData[0].properties.total_trips_to_focus)}</strong> trips to focus area per weekday morning (6am-9am)</p>
+          <p>Approx. <strong>${d3.format(',.2f')(clickedData[0].properties.total_trips_from_focus)}</strong> trips from focus area per weekday morning (6am-9am)</p>
         `)
         .setMaxWidth('300px')
         .addTo(map);
-      } else if (clickedData[0] && clickedData[0].layer.id === 'trips-from-focus') {
-        let totalTrips = clickedData[0].properties['from_trips_transit']
-          + clickedData[0].properties['from_trips_auto_pax']
-          + clickedData[0].properties['from_trips_driver']
-          + (isNaN(clickedData[0].properties['from_trips_bike']) ? 0 : clickedData[0].properties['from_trips_bike'])
-          + (isNaN(clickedData[0].properties['from_trips_walk']) ? 0 : clickedData[0].properties['from_trips_walk'])
-
-        new mapboxgl.Popup()
-          .setLngLat(e.lngLat)
-          .setHTML(`
-            <p>Approx. <strong>${d3.format(',.2f')(totalTrips)}</strong> trips from focus area per weekday morning (6am-9am)</p>
-          `)
-          .setMaxWidth('300px')
-          .addTo(map);
       } else if (clickedData[0] && clickedData[0].layer.id === 'transit-isochrone') {
         console.log(clickedData[0])
         new mapboxgl.Popup()
@@ -396,30 +363,16 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "25–50";
       entry4.textContent = "50–100";
       entry5.textContent = "100+";
-      toggleChoroplethLayer('trips-to-focus');
-      map.setPaintProperty('trips-to-focus', 'fill-opacity', 1);
-      map.setPaintProperty('trips-to-focus', 'fill-color', ["case",
-        ['has', 'to_trips_bike'],
-        ["step",
-          ["+", ['get', 'to_trips_transit'], ['get', 'to_trips_auto_pax'], ['get', 'to_trips_driver'], ['get', 'to_trips_bike'], ['get', 'to_trips_walk']],
-          zeroColor, 0,
-          colors[0], 10,
-          colors[1], 25,
-          colors[2], 50,
-          colors[3], 100,
-          colors[4]
-        ],
-        ["step",
-            ["+", ['get', 'to_trips_transit'], ['get', 'to_trips_auto_pax'], ['get', 'to_trips_driver']],
-            zeroColor, 0,
-            colors[0], 10,
-            colors[1], 25,
-            colors[2], 50,
-            colors[3], 100,
-            colors[4]
-          ],
-        ]
-      )
+      toggleChoroplethLayer('avg-trips');
+      map.setPaintProperty('avg-trips', 'fill-color', ["step",
+        ['get', 'total_trips_to_focus'],
+        zeroColor, 0,
+        colors[0], 10,
+        colors[1], 25,
+        colors[2], 50,
+        colors[3], 100,
+        colors[4]
+      ]);
       break;
 
       // Trips from focus area
@@ -431,30 +384,16 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       entry3.textContent = "25–50";
       entry4.textContent = "50–100";
       entry5.textContent = "100+";
-      toggleChoroplethLayer('trips-from-focus');
-      map.setPaintProperty('trips-from-focus', 'fill-opacity', 1);
-      map.setPaintProperty('trips-from-focus', 'fill-color', ["case",
-        ['has', 'from_trips_bike'],
-        ["step",
-          ["+", ['get', 'from_trips_transit'], ['get', 'from_trips_auto_pax'], ['get', 'from_trips_driver'], ['get', 'from_trips_bike'], ['get', 'from_trips_walk']],
-          zeroColor, 0,
-          colors[0], 10,
-          colors[1], 25,
-          colors[2], 50,
-          colors[3], 100,
-          colors[4]
-        ],
-        ["step",
-            ["+", ['get', 'from_trips_transit'], ['get', 'from_trips_auto_pax'], ['get', 'from_trips_driver']],
-            zeroColor, 0,
-            colors[0], 10,
-            colors[1], 25,
-            colors[2], 50,
-            colors[3], 100,
-            colors[4]
-          ],
-        ]
-      )
+      toggleChoroplethLayer('avg-trips');
+      map.setPaintProperty('avg-trips', 'fill-color', ["step",
+        ['get', 'total_trips_from_focus'],
+        zeroColor, 0,
+        colors[0], 10,
+        colors[1], 25,
+        colors[2], 50,
+        colors[3], 100,
+        colors[4]
+      ]);
       break;
       
       // Isochrones
@@ -559,15 +498,18 @@ function resetMap() {
   map.setLayoutProperty('focus-area-buffer', 'visibility', 'none');
   map.setLayoutProperty('openspace', 'visibility', 'none');
   map.setLayoutProperty('taz', 'visibility', 'none');
-  map.setLayoutProperty('trips-to-focus', 'visibility', 'none');
-  map.setLayoutProperty('trips-from-focus', 'visibility', 'none');
+  map.setLayoutProperty('avg-trips', 'visibility', 'none');
   map.setLayoutProperty('transit-isochrone', 'visibility', 'none');
   map.setLayoutProperty('bike-isochrone', 'visibility', 'none');
   map.setLayoutProperty('environmental-justice', 'visibility', 'none');
 }
 
+function mbtaLayerVisibility() {
+
+}
+
 function toggleChoroplethLayer(selectedLayer) {
-  const layers = ['taz', 'trips-to-focus', 'trips-from-focus', 'transit-isochrone', 'bike-isochrone'];
+  const layers = ['taz', 'avg-trips', 'transit-isochrone', 'bike-isochrone'];
   layers.forEach((layer) => {
     if (layer === selectedLayer) {
       map.setLayoutProperty(layer, 'visibility', 'visible');
