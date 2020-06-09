@@ -246,6 +246,7 @@ map.on('load', () => {
 document.querySelector('.layers').addEventListener('click', (e) => {
   const choroplethLegend = document.querySelector(".legend__choropleth");
   const massbuildsLegend = document.querySelector(".legend__massbuilds");
+  const bikeLegend = document.querySelector('.legend__bikes');
   const entry0 = choroplethLegend.querySelector("#legend-0");
   const entry1 = choroplethLegend.querySelector("#legend-1");
   const entry2 = choroplethLegend.querySelector("#legend-2");
@@ -281,6 +282,11 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       break;
 
     case 'bikes':
+      if (bikeLegend.style.display === "inline") {
+        bikeLegend.style.display = "none";
+      } else {
+        bikeLegend.style.display = "inline";
+      }
       toggleFeatureLayer('bike-lanes');
       break;
     

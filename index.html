@@ -38,7 +38,7 @@
         <label for="massbuilds">MassBuilds developments</label><br>
 
         <input type="checkbox" id="bikes" autocomplete="off">
-        <label for="bikes">Bike lanes</label><br>
+        <label for="bikes">Dedicated bike lanes</label><br>
 
         <input type="checkbox" id="envjustice" autocomplete="off">
         <label for="envjustice">Environmental justice communities</label><br>
@@ -50,33 +50,41 @@
         <label for="openspace">Open spaces</label><br>
         
         <h3 class="layers__subtitle">Basemaps</h3>
-        <input type="radio" id="population" name="layer__radio-options" autocomplete="off">
-        <label for="population">Total population (2016)</label><br>
+        <fieldset class="layers__set">
+          <input type="radio" id="population" name="layer__radio-options" autocomplete="off">
+          <label for="population">Total population (2016)</label><br>
+          
+          <input type="radio" id="households" name="layer__radio-options" autocomplete="off">
+          <label for="households">Total households (2016)</label><br>
+
+          <input type="radio" id="employment" name="layer__radio-options" autocomplete="off">
+          <label for="employment">Total employment (2016)</label><br>
+        </fieldset>
         
-        <input type="radio" id="households" name="layer__radio-options" autocomplete="off">
-        <label for="households">Total households (2016)</label><br>
+        <fieldset class="layers__set">
+          <input type="radio" id="to_trips_total" name="layer__radio-options" autocomplete="off">
+          <label for="to_trips_total">AM peak trips to focus area (2040)</label><br>
 
-        <input type="radio" id="employment" name="layer__radio-options" autocomplete="off">
-        <label for="employment">Total employment (2016)</label><br>
-        
-        <input type="radio" id="to_trips_total" name="layer__radio-options" autocomplete="off">
-        <label for="to_trips_total">Average trips to focus area (2040)</label><br>
+          <input type="radio" id="from_trips_total" name="layer__radio-options" autocomplete="off">
+          <label for="from_trips_total">AM peak trips from focus area (2040)</label><br>
+        </fieldset>
 
-        <input type="radio" id="from_trips_total" name="layer__radio-options" autocomplete="off">
-        <label for="from_trips_total">Average trips from focus area (2040)</label><br>
+        <fieldset class="layers__set">
+          <input type="radio" id="transit_to_west_station" name="layer__radio-options" autocomplete="off">
+          <label for="transit_to_west_station">Transit travel time to West Station (2040)</label><br>
 
-        <input type="radio" id="transit_to_west_station" name="layer__radio-options" autocomplete="off">
-        <label for="transit_to_west_station">Transit travel time to West Station (2040)</label><br>
+          <input type="radio" id="transit_from_west_station" name="layer__radio-options" autocomplete="off">
+          <label for="transit_from_west_station">Transit travel time from West Station (2040)</label><br>
+        </fieldset>
 
-        <input type="radio" id="transit_from_west_station" name="layer__radio-options" autocomplete="off">
-        <label for="transit_from_west_station">Transit travel time from West Station (2040)</label><br>
+        <fieldset class="layers__set">
+          <input type="radio" id="bike_to_west_station" name="layer__radio-options" autocomplete="off">
+          <label for="bike_to_west_station">Bike travel time to West Station (2040)</label><br>
 
-        <input type="radio" id="bike_to_west_station" name="layer__radio-options" autocomplete="off">
-        <label for="bike_to_west_station">Bike travel time to West Station (2040)</label><br>
-
-        <input type="radio" id="bike_from_west_station" name="layer__radio-options" autocomplete="off">
-        <label for="bike_from_west_station">Bike travel time from West Station (2040)</label><br>
-
+          <input type="radio" id="bike_from_west_station" name="layer__radio-options" autocomplete="off">
+          <label for="bike_from_west_station">Bike travel time from West Station (2040)</label><br>
+        </fieldset>
+    
         <input type="reset" value="Reset map settings" id="reset">
       </form>
       <svg width="200" height="100" class="legend legend__massbuilds">
@@ -90,6 +98,15 @@
         <circle cx="15" cy="90" r="5" fill="#a6cee3" />
         <text x="30" y="94">Projected</text>
       </svg>
+
+      <svg width="200" height="60" class="legend legend__bikes">
+        <text x="0" y="16" class="legend__title">Bike lanes</text>
+        <line x1="5" y1="30" x2="20" y2="30" stroke="#92C5DE" stroke-width="5"/>
+        <text x="30" y="34">Unprotected bike lanes</text>
+        <line x1="5" y1="50" x2="20" y2="50" stroke="#2166AC" stroke-width="5"/>
+        <text x="30" y="54">Protected bike lanes</text>
+      </svg>
+
       <svg width="250" height="140" class="legend legend__choropleth">
         <text x="0" y="16" class="legend__title">Basemap scale</text>
         <rect x="10" y="24" width="16" height="16" fill="#cccccc" />

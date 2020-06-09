@@ -56,6 +56,12 @@ p {
   margin-top: 8px;
 }
 
+.layers__set {
+  padding: 0;
+  border: 0;
+  margin-bottom: 8px;
+}
+
 .popup__question {
   font-family: 'Open Sans';
   font-size: 14px;
