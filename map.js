@@ -269,6 +269,8 @@ document.querySelector('.layers').addEventListener('click', (e) => {
     case 'reset':
       choroplethLegend.style.display = "none";
       massbuildsLegend.style.display = "none";
+      bikeLegend.style.display = "none";
+      connectionsLegend.style.display = "none";
       resetMap();
       break;
     case 'focus-area':
