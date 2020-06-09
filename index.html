@@ -38,7 +38,7 @@
         <label for="massbuilds">MassBuilds developments</label><br>
 
         <input type="checkbox" id="bikes" autocomplete="off">
-        <label for="bikes">Dedicated bike lanes</label><br>
+        <label for="bikes">Dedicated bike facilities</label><br>
 
         <input type="checkbox" id="envjustice" autocomplete="off">
         <label for="envjustice">Environmental justice communities</label><br>
@@ -47,7 +47,7 @@
         <label for="openspace">Open spaces</label><br>
 
         <input type="checkbox" id="proposed" autocomplete="off">
-        <label for="proposed">Proposed features</label><br>
+        <label for="proposed">Previously identified connections</label><br>
 
         <input type="checkbox" id="focus-area" autocomplete="off">
         <label for="focus-area">Focus area and buffer</label><br>
@@ -102,12 +102,22 @@
         <text x="30" y="94">Projected</text>
       </svg>
 
-      <svg width="200" height="60" class="legend legend__proposed">
-        <text x="0" y="16" class="legend__title">Bike lanes</text>
-        <line x1="5" y1="30" x2="20" y2="30" stroke="#92C5DE" stroke-width="5"/>
-        <text x="30" y="34">Unprotected bike lanes</text>
+      <svg width="200" height="60" class="legend legend__bikes">
+        <text x="0" y="16" class="legend__title">Dedicated bike facilities</text>
+        <line x1="5" y1="30" x2="20" y2="30" stroke="#214a2d" stroke-width="5"/>
+        <text x="30" y="34">Paved paths</text>
         <line x1="5" y1="50" x2="20" y2="50" stroke="#2166AC" stroke-width="5"/>
         <text x="30" y="54">Protected bike lanes</text>
+      </svg>
+
+      <svg width="270" height="100" class="legend legend__connections">
+        <text x="0" y="16" class="legend__title">Dedicated bike facilities</text>
+        <line x1="5" y1="30" x2="20" y2="30" stroke="#3b66b0" stroke-width="5"/>
+        <text x="30" y="34">Grand Junction</text>
+        <line x1="5" y1="50" x2="20" y2="50" stroke="#67cbe4" stroke-width="5"/>
+        <text x="30" y="54">New BRT facilities</text>
+        <line x1="5" y1="70" x2="20" y2="70" stroke="#233069" stroke-width="5"/>
+        <text x="30" y="74">New bike/pedestrian facilities</text>
       </svg>
 
       <svg width="250" height="140" class="legend legend__choropleth">

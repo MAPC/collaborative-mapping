@@ -257,6 +257,7 @@ map.on('load', () => {
 document.querySelector('.layers').addEventListener('click', (e) => {
   const choroplethLegend = document.querySelector(".legend__choropleth");
   const massbuildsLegend = document.querySelector(".legend__massbuilds");
+  const connectionsLegend = document.querySelector(".legend__connections");
   const bikeLegend = document.querySelector('.legend__bikes');
   const entry0 = choroplethLegend.querySelector("#legend-0");
   const entry1 = choroplethLegend.querySelector("#legend-1");
@@ -305,6 +306,11 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       break;
 
     case 'proposed':
+      if (connectionsLegend.style.display === "inline") {
+        connectionsLegend.style.display = "none";
+      } else {
+        connectionsLegend.style.display = "inline";
+      }
       toggleFeatureLayer('proposed-features')
       break;
 
