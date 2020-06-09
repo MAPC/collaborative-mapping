@@ -144,10 +144,11 @@ map.on('load', () => {
     } else {
       const clickedData = map.queryRenderedFeatures(
         [e.point.x, e.point.y],
-        { layers: ['mbta-stops', 'massbuilds', 'environmental-justice', 'taz', 'avg-trips', 'transit-isochrone', 'bike-isochrone'] },
+        { layers: ['mbta-stops', 'west-station', 'massbuilds', 'environmental-justice', 'proposed-features', 'taz', 'avg-trips', 'transit-isochrone', 'bike-isochrone'] },
       );
   
-      if (clickedData[0] && (clickedData[0].layer.id === 'mbta-stops')) {
+      if (clickedData[0] && ((clickedData[0].layer.id === 'mbta-stops') || (clickedData[0].layer.id === 'west-station'))) {
+        console.log(clickedData[0])
         let lineData = '';
         if (clickedData[0].properties.LINE) {
           lineData = `<p>${clickedData[0].properties.LINE}</p>`
@@ -173,6 +174,16 @@ map.on('load', () => {
           `)
           .setMaxWidth('300px')
           .addTo(map);
+      } else if (clickedData[0] && clickedData[0].layer.id === 'proposed-features') {
+        const proposedData = clickedData[0].properties.usr__nt ? `<p>${clickedData[0].properties.usr__nt}</p>` : '';
+        new mapboxgl.Popup()
+        .setLngLat(e.lngLat)
+        .setHTML(`
+          <p>${clickedData[0].properties.usr__tt}</p>
+          ${proposedData}
+        `)
+        .setMaxWidth('300px')
+        .addTo(map);
       } else if (clickedData[0] && clickedData[0].layer.id === 'environmental-justice') {
         let criteriaList = '';
         if (clickedData[0].properties.ENGLISH) {
@@ -261,7 +272,6 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       break;
     case 'focus-area':
       toggleFeatureLayer('focus-area');
-      toggleFeatureLayer('focus-area-buffer');
       break;
 
     case 'mbta-lines':
@@ -269,7 +279,7 @@ document.querySelector('.layers').addEventListener('click', (e) => {
       break;
 
     case 'mbta-stops':
-      toggleMbtaStops();
+      toggleFeatureLayer('mbta-stops');
       break;
     
     case 'massbuilds':
@@ -292,6 +302,10 @@ document.querySelector('.layers').addEventListener('click', (e) => {
     
     case 'openspace':
       toggleFeatureLayer('openspace')
+      break;
+
+    case 'proposed':
+      toggleFeatureLayer('proposed-features')
       break;
 
     case 'envjustice':
@@ -489,24 +503,6 @@ document.querySelector('.layers').addEventListener('click', (e) => {
 });
 
 saveGeojson();
-function toggleMbtaStops() {
-  if (document.querySelector("#mbta-stops").checked) {
-    map.setPaintProperty('mbta-stops', 'icon-opacity', 1)
-  } else {
-    map.setPaintProperty('mbta-stops', 'icon-opacity', [
-      "case",
-      [
-        "match",
-        ["get", "STOP"],
-        ["West Station (Proposed)"],
-        false,
-        true
-      ],
-      0,
-      1
-    ])
-  }
-}
 
 function toggleFeatureLayer(layerId) {
   const visibility = map.getLayoutProperty(layerId, 'visibility');
@@ -521,26 +517,15 @@ function resetMap() {
   map.setLayoutProperty('massbuilds', 'visibility', 'none');
   map.setLayoutProperty('mbta-routes', 'visibility', 'none');
   map.setLayoutProperty('focus-area', 'visibility', 'none');
-  map.setLayoutProperty('focus-area-buffer', 'visibility', 'none');
   map.setLayoutProperty('openspace', 'visibility', 'none');
+  map.setLayoutProperty('proposed-features', 'visibility', 'none');
   map.setLayoutProperty('taz', 'visibility', 'none');
   map.setLayoutProperty('avg-trips', 'visibility', 'none');
   map.setLayoutProperty('transit-isochrone', 'visibility', 'none');
   map.setLayoutProperty('bike-isochrone', 'visibility', 'none');
   map.setLayoutProperty('environmental-justice', 'visibility', 'none');
   map.setLayoutProperty('bike-lanes', 'visibility', 'none');
-  map.setPaintProperty('mbta-stops', 'icon-opacity', [
-    "case",
-    [
-      "match",
-      ["get", "STOP"],
-      ["West Station (Proposed)"],
-      false,
-      true
-    ],
-    0,
-    1
-  ])
+  map.setLayoutProperty('mbta-stops', 'visibility', 'none');
 }
 
 function toggleChoroplethLayer(selectedLayer) {
