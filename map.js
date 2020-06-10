@@ -148,7 +148,6 @@ map.on('load', () => {
       );
   
       if (clickedData[0] && ((clickedData[0].layer.id === 'mbta-stops') || (clickedData[0].layer.id === 'west-station'))) {
-        console.log(clickedData[0])
         let lineData = '';
         if (clickedData[0].properties.LINE) {
           lineData = `<p>${clickedData[0].properties.LINE}</p>`
@@ -215,13 +214,6 @@ map.on('load', () => {
         .setMaxWidth('300px')
         .addTo(map);
       } else if (clickedData[0] && clickedData[0].layer.id === 'avg-trips') {
-        console.log(clickedData[0])
-        let totalTrips = clickedData[0].properties['to_trips_transit']
-        + clickedData[0].properties['to_trips_auto_pax']
-        + clickedData[0].properties['to_trips_driver']
-        + (isNaN(clickedData[0].properties['to_trips_bike']) ? 0 : clickedData[0].properties['to_trips_bike'])
-        + (isNaN(clickedData[0].properties['to_trips_walk']) ? 0 : clickedData[0].properties['to_trips_walk'])
-
       new mapboxgl.Popup()
         .setLngLat(e.lngLat)
         .setHTML(`
@@ -234,18 +226,17 @@ map.on('load', () => {
         new mapboxgl.Popup()
         .setLngLat(e.lngLat)
         .setHTML(`
-          <p>Time from West Station: ${clickedData[0].properties['transit_time_from_246'] == -2 ? 'n/a' : d3.format(',.2f')(clickedData[0].properties['transit_time_from_246']) + " minutes"}</p>
           <p>Time to West Station: ${clickedData[0].properties['transit_time_to_246'] == -2 ? 'n/a' : d3.format(',.2f')(clickedData[0].properties['transit_time_to_246']) + " minutes"}</p>
+          <p>Time from West Station: ${clickedData[0].properties['transit_time_from_246'] == -2 ? 'n/a' : d3.format(',.2f')(clickedData[0].properties['transit_time_from_246']) + " minutes"}</p>
         `)
         .setMaxWidth('300px')
         .addTo(map);
       } else if (clickedData[0] && clickedData[0].layer.id === 'bike-isochrone') {
-        console.log(clickedData[0])
         new mapboxgl.Popup()
         .setLngLat(e.lngLat)
         .setHTML(`
-          <p>Time from West Station: ${clickedData[0].properties['travel_time_from_bike'] == -1 ? 'n/a' : d3.format(',.2f')(clickedData[0].properties['travel_time_from_bike']) + " minutes"}</p>
           <p>Time to West Station: ${clickedData[0].properties['travel_time_to_bike'] == -1 ? 'n/a' : d3.format(',.2f')(clickedData[0].properties['travel_time_to_bike']) + " minutes"}</p>
+          <p>Time from West Station: ${clickedData[0].properties['travel_time_from_bike'] == -1 ? 'n/a' : d3.format(',.2f')(clickedData[0].properties['travel_time_from_bike']) + " minutes"}</p>
         `)
         .setMaxWidth('300px')
         .addTo(map);
